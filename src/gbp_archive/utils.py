@@ -5,6 +5,7 @@ import io
 import os
 import tarfile as tar
 import warnings
+from collections import defaultdict
 from contextlib import contextmanager
 from dataclasses import asdict, is_dataclass
 from functools import singledispatch
@@ -33,7 +34,7 @@ def _(value: dt.date | dt.datetime) -> str:
     return value.isoformat()
 
 
-_RESOLVERS: dict[type, dict[str, Callable[[Any], Any]]] = {}
+_RESOLVERS: defaultdict[type, dict[str, Callable[[Any], Any]]] = defaultdict(dict)
 
 
 def decode_to(type_: type[_T], data: dict[str, Any]) -> _T:
@@ -59,7 +60,7 @@ def convert_to(type_: type, field: str) -> Callable[[Any], Any]:
     """Resolve the given datatype field of the given type"""
 
     def decorate(func: Callable[[Any], Any]) -> Callable[[Any], Any]:
-        resolvers_of_type = _RESOLVERS.setdefault(type_, {})
+        resolvers_of_type = _RESOLVERS[type_]
         resolvers_of_type[field] = func
         return func
 
