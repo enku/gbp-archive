@@ -17,6 +17,7 @@ import gbp_archive as archive
 
 
 @uf.requires("publisher")
+@uf.options(environ={"records_backend": "memory"})
 class CoreDumpTests(TestCase):
     def test(self) -> None:
         builds = [
@@ -57,6 +58,7 @@ class CoreDumpTests(TestCase):
 
 
 @uf.requires("publisher")
+@uf.options(environ={"records_backend": "memory"})
 class CoreRestoreTests(TestCase):
     def test(self) -> None:
         builds = [
@@ -84,6 +86,7 @@ class CoreRestoreTests(TestCase):
 
 
 @uf.requires("tmpdir", "publisher", "build")
+@uf.options(environ={"records_backend": "memory"})
 class StorageDumpTestCase(TestCase):
     """Tests for Storage.dump"""
 
@@ -123,6 +126,7 @@ class StorageDumpTestCase(TestCase):
 
 
 @uf.requires("tmpdir", "publisher", "build")
+@uf.options(environ={"records_backend": "memory"})
 class StorageRestoreTests(TestCase):
     """Tests for storage.restore"""
 

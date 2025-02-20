@@ -12,13 +12,14 @@ from gbp_testkit.factories import BuildFactory
 from gbp_testkit.helpers import parse_args
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
-from unittest_fixtures import requires
+from unittest_fixtures import options, requires
 
 import gbp_archive as archive
 from gbp_archive.cli.restore import handler as restore
 
 
 @requires("console", "publisher", "tmpdir")
+@options(environ={"records_backend": "memory"})
 class RestoreTests(TestCase):
     def test_restore_all(self) -> None:
         builds = create_builds()

@@ -14,12 +14,13 @@ from gbp_testkit.factories import BuildFactory
 from gbp_testkit.helpers import parse_args
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
-from unittest_fixtures import requires
+from unittest_fixtures import options, requires
 
 from gbp_archive.cli.dump import handler as dump
 
 
 @requires("console", "publisher", "tmpdir")
+@options(environ={"records_backend": "memory"})
 class DumpTests(TestCase):
     def test_dump_all(self) -> None:
         create_builds()
