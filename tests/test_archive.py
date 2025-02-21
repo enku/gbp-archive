@@ -5,21 +5,20 @@
 import io
 import json
 import tarfile as tar
-from unittest import mock
+from unittest import TestCase, mock
 
-import unittest_fixtures as uf
-from gbp_testkit import TestCase
 from gbp_testkit.factories import BuildFactory
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
+from unittest_fixtures import Fixtures, given
 
 import gbp_archive as archive
 
 
-@uf.requires("publisher")
-@uf.options(environ={"records_backend": "memory"})
+@given("publisher")
 class CoreDumpTests(TestCase):
-    def test(self) -> None:
+    # pylint: disable=unused-argument
+    def test(self, fixtures: Fixtures) -> None:
         builds = [
             *BuildFactory.create_batch(3, machine="foo"),
             *BuildFactory.create_batch(2, machine="bar"),
@@ -57,10 +56,10 @@ class CoreDumpTests(TestCase):
                 self.assertEqual(6, len(data))
 
 
-@uf.requires("publisher")
-@uf.options(environ={"records_backend": "memory"})
+@given("publisher")
 class CoreRestoreTests(TestCase):
-    def test(self) -> None:
+    # pylint: disable=unused-argument
+    def test(self, fixtures: Fixtures) -> None:
         builds = [
             *BuildFactory.create_batch(3, machine="foo"),
             *BuildFactory.create_batch(2, machine="bar"),
@@ -85,21 +84,19 @@ class CoreRestoreTests(TestCase):
             self.assertTrue(publisher.repo.build_records.exists(build))
 
 
-@uf.requires("tmpdir", "publisher", "build")
-@uf.options(environ={"records_backend": "memory"})
+@given("tmpdir", "publisher", build="pulled_build")
 class StorageDumpTestCase(TestCase):
     """Tests for Storage.dump"""
 
-    def test(self) -> None:
+    def test(self, fixtures: Fixtures) -> None:
         """Should raise an exception if the build has not been pulled"""
         # Given the pulled build
-        build = self.fixtures.build
-        publisher.pull(build)
+        build = fixtures.build
         publisher.publish(build)
         publisher.tag(build, "mytag")
 
         # Given the storage, and file object
-        path = self.fixtures.tmpdir / "dump.tar"
+        path = fixtures.tmpdir / "dump.tar"
         with open(path, "wb") as out:
 
             # Then we can dump the builds to the file
@@ -125,15 +122,13 @@ class StorageDumpTestCase(TestCase):
         callback.assert_called_once_with("dump", "storage", build)
 
 
-@uf.requires("tmpdir", "publisher", "build")
-@uf.options(environ={"records_backend": "memory"})
+@given("tmpdir", "publisher", build="pulled_build")
 class StorageRestoreTests(TestCase):
     """Tests for storage.restore"""
 
-    def test(self) -> None:
+    def test(self, fixtures: Fixtures) -> None:
         # Given the pulled build
-        build = self.fixtures.build
-        publisher.pull(build)
+        build = fixtures.build
         publisher.publish(build)
         publisher.tag(build, "mytag")
 
