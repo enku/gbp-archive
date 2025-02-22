@@ -9,20 +9,15 @@ from pathlib import Path
 from typing import Any, cast
 from unittest import TestCase, mock
 
-from gbp_testkit.factories import BuildFactory
 from gbp_testkit.helpers import parse_args
-from gentoo_build_publisher import publisher
-from gentoo_build_publisher.types import Build
 from unittest_fixtures import Fixtures, given
 
 from gbp_archive.cli.dump import handler as dump
 
 
-@given("console", "publisher", "tmpdir")
+@given("builds", "console", "tmpdir")
 class DumpTests(TestCase):
     def test_dump_all(self, fixtures: Fixtures) -> None:
-        create_builds()
-
         path = fixtures.tmpdir / "test.tar"
         cmdline = f"gbp dump {path}"
 
@@ -38,8 +33,6 @@ class DumpTests(TestCase):
         self.assertEqual(6, len(records(path)))
 
     def test_given_machine(self, fixtures: Fixtures) -> None:
-        create_builds()
-
         path = fixtures.tmpdir / "test.tar"
         cmdline = f"gbp dump {path} lighthouse"
 
@@ -55,7 +48,7 @@ class DumpTests(TestCase):
         self.assertEqual(3, len(records(path)))
 
     def test_given_build(self, fixtures: Fixtures) -> None:
-        builds = create_builds()
+        builds = fixtures.builds
         build = builds[-1]
 
         path = fixtures.tmpdir / "test.tar"
@@ -73,8 +66,6 @@ class DumpTests(TestCase):
         self.assertEqual(1, len(records(path)))
 
     def test_dump_to_stdout(self, fixtures: Fixtures) -> None:
-        create_builds()
-
         cmdline = "gbp dump -"
 
         args = parse_args(cmdline)
@@ -94,7 +85,7 @@ class DumpTests(TestCase):
         self.assertEqual(6, len(records(path)))
 
     def test_verbose_flag(self, fixtures: Fixtures) -> None:
-        builds = create_builds()
+        builds = fixtures.builds
         builds.sort(key=lambda build: (build.machine, build.build_id))
 
         cmdline = "gbp dump -v -"
@@ -119,8 +110,6 @@ class DumpTests(TestCase):
         self.assertEqual(expected, console.err.file.getvalue())
 
     def test_build_id_not_found(self, fixtures: Fixtures) -> None:
-        create_builds()
-
         path = fixtures.tmpdir / "test.tar"
         cmdline = f"gbp dump {path} bogus.99"
 
@@ -135,8 +124,6 @@ class DumpTests(TestCase):
         self.assertFalse(path.exists())
 
     def test_machine_not_found(self, fixtures: Fixtures) -> None:
-        create_builds()
-
         path = fixtures.tmpdir / "test.tar"
         cmdline = f"gbp dump {path} bogus"
 
@@ -163,15 +150,3 @@ def records(path: Path) -> list[dict[str, Any]]:
         assert member is not None
         with member:
             return cast(list[dict[str, Any]], json.load(member))
-
-
-def create_builds() -> list[Build]:
-    builds = [
-        *BuildFactory.create_batch(3, machine="lighthouse"),
-        *BuildFactory.create_batch(2, machine="polaris"),
-        *BuildFactory.create_batch(1, machine="babette"),
-    ]
-    for build in builds:
-        publisher.pull(build)
-
-    return builds

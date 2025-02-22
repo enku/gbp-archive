@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Iterable
 from unittest import TestCase, mock
 
-from gbp_testkit.factories import BuildFactory
 from gbp_testkit.helpers import parse_args
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
@@ -17,10 +16,10 @@ import gbp_archive as archive
 from gbp_archive.cli.restore import handler as restore
 
 
-@given("console", "publisher", "tmpdir")
+@given("builds", "console", "publisher", "tmpdir")
 class RestoreTests(TestCase):
     def test_restore_all(self, fixtures: Fixtures) -> None:
-        builds = create_builds()
+        builds = fixtures.builds
         first_build = builds[0]
         publisher.publish(first_build)
         last_build = builds[-1]
@@ -48,7 +47,7 @@ class RestoreTests(TestCase):
         self.assertEqual(["last"], publisher.tags(last_build))
 
     def test_restore_from_stdin(self, fixtures: Fixtures) -> None:
-        builds = create_builds()
+        builds = fixtures.builds
         restore_image = io.BytesIO()
         archive.dump(builds, restore_image)
         delete_builds(builds)
@@ -71,7 +70,7 @@ class RestoreTests(TestCase):
             self.assertTrue(publisher.repo.build_records.exists(build))
 
     def test_verbose_flag(self, fixtures: Fixtures) -> None:
-        builds = create_builds()
+        builds = fixtures.builds
         builds.sort(key=lambda build: (build.machine, build.build_id))
         restore_image = io.BytesIO()
         archive.dump(builds, restore_image)
@@ -98,18 +97,6 @@ class RestoreTests(TestCase):
         )
 
         self.assertEqual(expected, console.err.file.getvalue())
-
-
-def create_builds() -> list[Build]:
-    builds = [
-        *BuildFactory.create_batch(3, machine="nebula"),
-        *BuildFactory.create_batch(2, machine="quasar"),
-        *BuildFactory.create_batch(1, machine="titanium"),
-    ]
-    for build in builds:
-        publisher.pull(build)
-
-    return builds
 
 
 def dump_builds(builds: Iterable[Build], path: Path) -> None:
