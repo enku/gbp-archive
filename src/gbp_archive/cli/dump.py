@@ -3,8 +3,10 @@
 import argparse
 import sys
 
+import dateparser  # type: ignore
 from gbpcli.gbp import GBP
 from gbpcli.types import Console
+from gbpcli.utils import EPOCH
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.records import BuildRecord
 from gentoo_build_publisher.types import Build
@@ -27,6 +29,8 @@ def handler(args: argparse.Namespace, _gbp: GBP, console: Console) -> int:
         console.err.print(f"{error.args[0]} not found.")
         return 1
 
+    builds = {build for build in builds if build.completed > args.newer}
+
     def verbose_callback(_type: DumpType, phase: DumpPhase, build: Build) -> None:
         console.err.print(f"dumping {phase} for {build}", highlight=False)
 
@@ -48,6 +52,14 @@ def handler(args: argparse.Namespace, _gbp: GBP, console: Console) -> int:
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
     """Set subcommand arguments"""
+    parser.add_argument(
+        "-N",
+        "--newer",
+        "--after-date",
+        type=lambda s: dateparser.parse(s).astimezone(),
+        default=EPOCH,
+        help="Only dump builds newer than this date(time)",
+    )
     parser.add_argument(
         "--verbose",
         "-v",

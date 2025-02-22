@@ -10,12 +10,13 @@ from typing import Any, cast
 from unittest import TestCase, mock
 
 from gbp_testkit.helpers import parse_args
+from gbpcli.utils import EPOCH
 from unittest_fixtures import Fixtures, given
 
 from gbp_archive.cli.dump import handler as dump
 
 
-@given("builds", "console", "tmpdir")
+@given("publisher", "builds", "console", "tmpdir")
 class DumpTests(TestCase):
     def test_dump_all(self, fixtures: Fixtures) -> None:
         path = fixtures.tmpdir / "test.tar"
@@ -136,6 +137,28 @@ class DumpTests(TestCase):
         self.assertEqual(1, status)
         self.assertEqual("bogus not found.\n", console.err.file.getvalue())
         self.assertFalse(path.exists())
+
+    def test_newer_flag(self, fixtures: Fixtures) -> None:
+        builds = fixtures.builds
+        publisher = fixtures.publisher
+
+        for build in builds[:2]:
+            record = publisher.repo.build_records.get(build)
+            publisher.repo.build_records.save(record, completed=EPOCH)
+
+        path = fixtures.tmpdir / "test.tar"
+        cmdline = f"gbp dump -N 2025-02-22 {path}"
+
+        args = parse_args(cmdline)
+        gbp = mock.Mock()
+        console = fixtures.console
+
+        status = dump(args, gbp, console)
+
+        self.assertEqual(0, status)
+        self.assertTrue(path.exists())
+
+        self.assertEqual(4, len(records(path)))
 
 
 def records(path: Path) -> list[dict[str, Any]]:
