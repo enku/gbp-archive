@@ -98,6 +98,16 @@ class RestoreTests(TestCase):
 
         self.assertEqual(expected, console.err.file.getvalue())
 
+    def test_help_flag(self, fixtures: Fixtures) -> None:
+        # pylint: disable=duplicate-code
+        cmdline = "gbp restore --help"
+        console = fixtures.console
+
+        console.out.print(f"[green]$ [/green]{cmdline}")
+        with mock.patch("argparse._sys.stdout.write", console.out.print):
+            with self.assertRaises(SystemExit):
+                parse_args(cmdline)
+
 
 def dump_builds(builds: Iterable[Build], path: Path) -> None:
     with path.open("wb") as outfile:

@@ -176,6 +176,15 @@ class DumpTests(TestCase):
         self.assertEqual(3, len(lines))
         self.assertTrue(all(i.startswith("lighthouse.") for i in lines))
 
+    def test_help_flag(self, fixtures: Fixtures) -> None:
+        cmdline = "gbp dump --help"
+        console = fixtures.console
+
+        console.out.print(f"[green]$ [/green]{cmdline}")
+        with mock.patch("argparse._sys.stdout.write", console.out.print):
+            with self.assertRaises(SystemExit):
+                parse_args(cmdline)
+
 
 def records(path: Path) -> list[dict[str, Any]]:
     """Return the number of records in the dump file given by path"""
