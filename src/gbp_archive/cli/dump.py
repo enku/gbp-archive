@@ -2,6 +2,7 @@
 
 import argparse
 import sys
+from typing import Iterable
 
 import dateparser  # type: ignore
 from gbpcli.gbp import GBP
@@ -30,6 +31,10 @@ def handler(args: argparse.Namespace, _gbp: GBP, console: Console) -> int:
         return 1
 
     builds = {build for build in builds if build.completed > args.newer}
+
+    if args.list:
+        print_builds(builds, console)
+        return 0
 
     def verbose_callback(_type: DumpType, phase: DumpPhase, build: Build) -> None:
         console.err.print(f"dumping {phase} for {build}", highlight=False)
@@ -68,9 +73,22 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
         help="verbose mode: list builds dumped",
     )
     parser.add_argument(
+        "--list",
+        "-t",
+        action="store_true",
+        default=False,
+        help="Don't create dump, but display what builds would be dumped",
+    )
+    parser.add_argument(
         "filename", help='Filename to dump builds to ("-" for standard out)'
     )
     parser.add_argument("machines", nargs="*", help="machine(s) to dump")
+
+
+def print_builds(builds: Iterable[BuildRecord], console: Console) -> None:
+    """Print the given builds to Console.out"""
+    for build in builds:
+        console.out.print(str(build))
 
 
 def builds_to_dump(buildspecs: list[str]) -> set[BuildRecord]:

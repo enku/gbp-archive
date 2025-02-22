@@ -160,6 +160,24 @@ class DumpTests(TestCase):
 
         self.assertEqual(4, len(records(path)))
 
+    def test_list_flag(self, fixtures: Fixtures) -> None:
+        path = fixtures.tmpdir / "test.tar"
+        cmdline = f"gbp dump --list {path} lighthouse"
+
+        args = parse_args(cmdline)
+        gbp = mock.Mock()
+        console = fixtures.console
+
+        status = dump(args, gbp, console)
+
+        self.assertEqual(0, status)
+        self.assertFalse(path.exists())
+
+        output = console.out.file.getvalue()
+        lines = output.strip().split("\n")
+        self.assertEqual(3, len(lines))
+        self.assertTrue(all(i.startswith("lighthouse.") for i in lines))
+
 
 def records(path: Path) -> list[dict[str, Any]]:
     """Return the number of records in the dump file given by path"""
