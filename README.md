@@ -10,11 +10,11 @@ from the GBP server instance.  The `dump` subcommand can dump all the builds
 on the instance, just a particular machine or machines, or a particular build
 or builds, or any combination of those.
 
-![screenshot](https://raw.githubusercontent.com/enku/screenshots/refs/heads/master/gentoo-build-publisher/gbp-dump.png)
+![screenshot](https://raw.githubusercontent.com/enku/screenshots/refs/heads/master/gbp-archive/dump-usage.svg)
 
 Then restoring is as simple as running `gbp restore`:
 
-![screenshot](https://raw.githubusercontent.com/enku/screenshots/refs/heads/master/gentoo-build-publisher/gbp-restore.png)
+![screenshot](https://raw.githubusercontent.com/enku/screenshots/refs/heads/master/gbp-archive/restore-usage.svg)
 
 # Process
 
