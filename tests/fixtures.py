@@ -2,7 +2,7 @@
 
 # pylint: disable=missing-docstring
 
-from typing import Any, cast
+from typing import cast
 
 from gbp_testkit.fixtures import build, console, environ, publisher, settings, tmpdir
 from gentoo_build_publisher.types import Build
@@ -10,7 +10,7 @@ from unittest_fixtures import Fixtures, fixture
 
 
 @fixture("build", "publisher", "tmpdir")
-def pulled_build(_options: Any, fixtures: Fixtures) -> Build:
+def pulled_build(fixtures: Fixtures) -> Build:
     fixtures.publisher.pull(fixtures.build)
 
     return cast(Build, fixtures.build)
