@@ -39,8 +39,8 @@ def handler(args: argparse.Namespace, _gbp: GBP, console: Console) -> int:
 def parse_args(parser: argparse.ArgumentParser) -> None:
     """Set subcommand arguments"""
     parser.add_argument(
-        "--verbose",
         "-v",
+        "--verbose",
         action="store_true",
         default=False,
         help="verbose mode: list builds restored",
