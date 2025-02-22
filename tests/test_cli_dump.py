@@ -20,7 +20,7 @@ from gbp_archive.cli.dump import handler as dump
 class DumpTests(TestCase):
     def test_dump_all(self, fixtures: Fixtures) -> None:
         path = fixtures.tmpdir / "test.tar"
-        cmdline = f"gbp dump {path}"
+        cmdline = f"gbp dump -f {path}"
 
         args = parse_args(cmdline)
         gbp = mock.Mock()
@@ -35,7 +35,7 @@ class DumpTests(TestCase):
 
     def test_given_machine(self, fixtures: Fixtures) -> None:
         path = fixtures.tmpdir / "test.tar"
-        cmdline = f"gbp dump {path} lighthouse"
+        cmdline = f"gbp dump -f {path} lighthouse"
 
         args = parse_args(cmdline)
         gbp = mock.Mock()
@@ -53,7 +53,7 @@ class DumpTests(TestCase):
         build = builds[-1]
 
         path = fixtures.tmpdir / "test.tar"
-        cmdline = f"gbp dump {path} {build}"
+        cmdline = f"gbp dump -f {path} {build}"
 
         args = parse_args(cmdline)
         gbp = mock.Mock()
@@ -67,7 +67,7 @@ class DumpTests(TestCase):
         self.assertEqual(1, len(records(path)))
 
     def test_dump_to_stdout(self, fixtures: Fixtures) -> None:
-        cmdline = "gbp dump -"
+        cmdline = "gbp dump"
 
         args = parse_args(cmdline)
         gbp = mock.Mock()
@@ -89,7 +89,7 @@ class DumpTests(TestCase):
         builds = fixtures.builds
         builds.sort(key=lambda build: (build.machine, build.build_id))
 
-        cmdline = "gbp dump -v -"
+        cmdline = "gbp dump -v"
 
         args = parse_args(cmdline)
         gbp = mock.Mock()
@@ -112,7 +112,7 @@ class DumpTests(TestCase):
 
     def test_build_id_not_found(self, fixtures: Fixtures) -> None:
         path = fixtures.tmpdir / "test.tar"
-        cmdline = f"gbp dump {path} bogus.99"
+        cmdline = f"gbp dump -f{path} bogus.99"
 
         args = parse_args(cmdline)
         gbp = mock.Mock()
@@ -126,7 +126,7 @@ class DumpTests(TestCase):
 
     def test_machine_not_found(self, fixtures: Fixtures) -> None:
         path = fixtures.tmpdir / "test.tar"
-        cmdline = f"gbp dump {path} bogus"
+        cmdline = f"gbp dump -f {path} bogus"
 
         args = parse_args(cmdline)
         gbp = mock.Mock()
@@ -147,7 +147,7 @@ class DumpTests(TestCase):
             publisher.repo.build_records.save(record, completed=EPOCH)
 
         path = fixtures.tmpdir / "test.tar"
-        cmdline = f"gbp dump -N 2025-02-22 {path}"
+        cmdline = f"gbp dump -N 2025-02-22 -f{path}"
 
         args = parse_args(cmdline)
         gbp = mock.Mock()
@@ -161,8 +161,7 @@ class DumpTests(TestCase):
         self.assertEqual(4, len(records(path)))
 
     def test_list_flag(self, fixtures: Fixtures) -> None:
-        path = fixtures.tmpdir / "test.tar"
-        cmdline = f"gbp dump --list {path} lighthouse"
+        cmdline = "gbp dump --list lighthouse"
 
         args = parse_args(cmdline)
         gbp = mock.Mock()
@@ -171,7 +170,6 @@ class DumpTests(TestCase):
         status = dump(args, gbp, console)
 
         self.assertEqual(0, status)
-        self.assertFalse(path.exists())
 
         output = console.out.file.getvalue()
         lines = output.strip().split("\n")

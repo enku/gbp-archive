@@ -19,7 +19,7 @@ def handler(args: argparse.Namespace, _gbp: GBP, console: Console) -> int:
     def verbose_callback(_type: DumpType, phase: DumpPhase, build: Build) -> None:
         console.err.print(f"restoring {phase} for {build}", highlight=False)
 
-    filename = args.filename
+    filename = args.file
     is_stdin = filename == "-"
     kwargs = {"callback": verbose_callback} if args.verbose else {}
 
@@ -46,5 +46,8 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
         help="verbose mode: list builds restored",
     )
     parser.add_argument(
-        "filename", help='Filename to load builds from ("-" for standard out)'
+        "-f",
+        "--file",
+        default="-",
+        help='Filename to restore builds from ("-" for standard out)',
     )

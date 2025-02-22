@@ -39,7 +39,7 @@ def handler(args: argparse.Namespace, _gbp: GBP, console: Console) -> int:
     def verbose_callback(_type: DumpType, phase: DumpPhase, build: Build) -> None:
         console.err.print(f"dumping {phase} for {build}", highlight=False)
 
-    filename = args.filename
+    filename = args.file
     is_stdout = filename == "-"
     kwargs = {"callback": verbose_callback} if args.verbose else {}
 
@@ -66,21 +66,25 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
         help="Only dump builds newer than this date(time)",
     )
     parser.add_argument(
-        "--verbose",
         "-v",
+        "--verbose",
         action="store_true",
         default=False,
         help="verbose mode: list builds dumped",
     )
-    parser.add_argument(
-        "--list",
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument(
         "-t",
+        "--list",
         action="store_true",
         default=False,
         help="Don't create dump, but display what builds would be dumped",
     )
-    parser.add_argument(
-        "filename", help='Filename to dump builds to ("-" for standard out)'
+    group.add_argument(
+        "-f",
+        "--file",
+        default="-",
+        help='Filename to dump builds to ("-" for standard out)',
     )
     parser.add_argument("machines", nargs="*", help="machine(s) to dump")
 

@@ -29,7 +29,7 @@ class RestoreTests(TestCase):
         delete_builds(builds)
 
         path = fixtures.tmpdir / "test.tar"
-        cmdline = f"gbp restore {path}"
+        cmdline = f"gbp restore -f{path}"
 
         args = parse_args(cmdline)
         gbp = mock.Mock()
@@ -53,7 +53,7 @@ class RestoreTests(TestCase):
         delete_builds(builds)
         restore_image.seek(0)
 
-        cmdline = "gbp restore -"
+        cmdline = "gbp restore"
 
         args = parse_args(cmdline)
         gbp = mock.Mock()
@@ -77,7 +77,7 @@ class RestoreTests(TestCase):
         delete_builds(builds)
         restore_image.seek(0)
 
-        cmdline = "gbp restore -v -"
+        cmdline = "gbp restore -v"
 
         args = parse_args(cmdline)
         gbp = mock.Mock()
