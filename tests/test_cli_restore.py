@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Iterable
 from unittest import TestCase, mock
 
-from gbp_testkit.helpers import parse_args
+from gbp_testkit.helpers import parse_args, print_command
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
 from unittest_fixtures import Fixtures, given
@@ -28,11 +28,12 @@ class RestoreTests(TestCase):
         dump_builds(builds, path)
         delete_builds(builds)
 
-        cmdline = f"gbp restore -f{path}"
+        cmdline = f"gbp restore -vf {path}"
 
         args = parse_args(cmdline)
         gbp = mock.Mock()
         console = fixtures.console
+        print_command(cmdline, console)
 
         status = restore(args, gbp, console)
 
