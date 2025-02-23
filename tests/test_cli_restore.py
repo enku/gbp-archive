@@ -98,6 +98,31 @@ class RestoreTests(TestCase):
 
         self.assertEqual(expected, console.err.file.getvalue())
 
+    def test_list_flag(self, fixtures: Fixtures) -> None:
+        builds = fixtures.builds
+        path = Path("test.tar")
+        dump_builds(builds, path)
+        delete_builds(builds)
+
+        cmdline = f"gbp restore -tf {path}"
+
+        args = parse_args(cmdline)
+        gbp = mock.Mock()
+        console = fixtures.console
+        print_command(cmdline, console)
+
+        status = restore(args, gbp, console)
+
+        self.assertEqual(0, status)
+        self.assertEqual(0, publisher.repo.build_records.count())
+
+        output = console.out.file.getvalue()
+        lines = output.strip().split("\n")[1:]
+        self.assertEqual(len(builds), len(lines))
+
+        for build in builds:
+            self.assertIn(str(build), lines)
+
     def test_help_flag(self, fixtures: Fixtures) -> None:
         # pylint: disable=duplicate-code
         cmdline = "gbp restore --help"

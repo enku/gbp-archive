@@ -53,6 +53,17 @@ def dump(
             tarfile.addfile(tarinfo, fp)
 
 
+def tabulate(infile: IO[bytes]) -> list[Build]:
+    """Return the list of builds in the archive"""
+    with tar.open(fileobj=infile, mode="r|") as tarfile:
+        member = tarfile.next()
+        assert member is not None
+        fp = tarfile.extractfile(member)
+        assert fp is not None
+        m = metadata.restore(fp, callback=None)
+        return [Build.from_id(i) for i in m["manifest"]]
+
+
 def restore(
     infile: IO[bytes], *, callback: DumpCallback = default_dump_callback
 ) -> None:

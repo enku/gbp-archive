@@ -2,6 +2,7 @@
 
 import argparse
 import sys
+from typing import IO
 
 from gbpcli.gbp import GBP
 from gbpcli.types import Console
@@ -27,12 +28,21 @@ def handler(args: argparse.Namespace, _gbp: GBP, console: Console) -> int:
         # I'm using try/finally. Leave me alone pylint!
         # pylint: disable=consider-using-with
         fp = sys.stdin.buffer if is_stdin else open(filename, "rb")
-        archive.restore(fp, **kwargs)
+        if args.list:
+            print_builds(fp, console)
+        else:
+            archive.restore(fp, **kwargs)
     finally:
         if not is_stdin:
             fp.close()
 
     return 0
+
+
+def print_builds(fp: IO[bytes], console: Console) -> None:
+    "Print the list of builds in the fp archive to stdout" ""
+    for build in archive.tabulate(fp):
+        console.out.print(str(build))
 
 
 # pylint: disable=R0801
@@ -44,6 +54,13 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
         action="store_true",
         default=False,
         help="verbose mode: list builds restored",
+    )
+    parser.add_argument(
+        "-t",
+        "--list",
+        action="store_true",
+        default=False,
+        help="Don't restore dump, but display what builds would be restored",
     )
     parser.add_argument(
         "-f",
