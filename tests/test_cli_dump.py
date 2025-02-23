@@ -9,17 +9,17 @@ from pathlib import Path
 from typing import Any, cast
 from unittest import TestCase, mock
 
-from gbp_testkit.helpers import parse_args
+from gbp_testkit.helpers import parse_args, print_command
 from gbpcli.utils import EPOCH
 from unittest_fixtures import Fixtures, given
 
 from gbp_archive.cli.dump import handler as dump
 
 
-@given("publisher", "builds", "console", "tmpdir")
+@given("publisher", "builds", "console", "tmpdir", "cd")
 class DumpTests(TestCase):
     def test_dump_all(self, fixtures: Fixtures) -> None:
-        path = fixtures.tmpdir / "test.tar"
+        path = Path("test.tar")
         cmdline = f"gbp dump -f {path}"
 
         args = parse_args(cmdline)
@@ -34,7 +34,7 @@ class DumpTests(TestCase):
         self.assertEqual(6, len(records(path)))
 
     def test_given_machine(self, fixtures: Fixtures) -> None:
-        path = fixtures.tmpdir / "test.tar"
+        path = Path("test.tar")
         cmdline = f"gbp dump -f {path} lighthouse"
 
         args = parse_args(cmdline)
@@ -52,7 +52,7 @@ class DumpTests(TestCase):
         builds = fixtures.builds
         build = builds[-1]
 
-        path = fixtures.tmpdir / "test.tar"
+        path = Path("test.tar")
         cmdline = f"gbp dump -f {path} {build}"
 
         args = parse_args(cmdline)
@@ -78,9 +78,9 @@ class DumpTests(TestCase):
             status = dump(args, gbp, console)
 
         self.assertEqual(0, status)
-        path = fixtures.tmpdir / "test.tar"
+        path = Path("test.tar")
 
-        with open(path, "wb") as fp:
+        with path.open("wb") as fp:
             fp.write(stdout.buffer.getvalue())
 
         self.assertEqual(6, len(records(path)))
@@ -111,7 +111,7 @@ class DumpTests(TestCase):
         self.assertEqual(expected, console.err.file.getvalue())
 
     def test_build_id_not_found(self, fixtures: Fixtures) -> None:
-        path = fixtures.tmpdir / "test.tar"
+        path = Path("test.tar")
         cmdline = f"gbp dump -f{path} bogus.99"
 
         args = parse_args(cmdline)
@@ -125,7 +125,7 @@ class DumpTests(TestCase):
         self.assertFalse(path.exists())
 
     def test_machine_not_found(self, fixtures: Fixtures) -> None:
-        path = fixtures.tmpdir / "test.tar"
+        path = Path("test.tar")
         cmdline = f"gbp dump -f {path} bogus"
 
         args = parse_args(cmdline)
@@ -146,7 +146,7 @@ class DumpTests(TestCase):
             record = publisher.repo.build_records.get(build)
             publisher.repo.build_records.save(record, completed=EPOCH)
 
-        path = fixtures.tmpdir / "test.tar"
+        path = Path("test.tar")
         cmdline = f"gbp dump -N 2025-02-22 -f{path}"
 
         args = parse_args(cmdline)
@@ -166,13 +166,14 @@ class DumpTests(TestCase):
         args = parse_args(cmdline)
         gbp = mock.Mock()
         console = fixtures.console
+        print_command(cmdline, console)
 
         status = dump(args, gbp, console)
 
         self.assertEqual(0, status)
 
         output = console.out.file.getvalue()
-        lines = output.strip().split("\n")
+        lines = output.strip().split("\n")[1:]
         self.assertEqual(3, len(lines))
         self.assertTrue(all(i.startswith("lighthouse.") for i in lines))
 

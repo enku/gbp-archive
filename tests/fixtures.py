@@ -1,13 +1,15 @@
 """Fixtures for gbp-archive"""
 
-# pylint: disable=missing-docstring
+# pylint: disable=missing-docstring,redefined-outer-name
 
+import os
+from pathlib import Path
 from typing import Iterable, cast
 
 from gbp_testkit.factories import BuildFactory
 from gbp_testkit.fixtures import build, console, environ, publisher, settings, tmpdir
 from gentoo_build_publisher.types import Build
-from unittest_fixtures import Fixtures, fixture
+from unittest_fixtures import FixtureContext, Fixtures, fixture
 
 
 @fixture("build", "publisher", "tmpdir")
@@ -30,6 +32,16 @@ def builds(
         fixtures.publisher.pull(b)
 
     return builds_
+
+
+@fixture("tmpdir")
+def cd(fixtures: Fixtures, *, cd: Path | None = None) -> FixtureContext[Path]:
+    """Changes to the given directory (tmpdir by default)"""
+    cwd = cwd = os.getcwd()
+    cd = cd or fixtures.tmpdir
+    os.chdir(cd)
+    yield cd
+    os.chdir(cwd)
 
 
 __all__ = (

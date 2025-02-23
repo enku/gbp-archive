@@ -16,7 +16,7 @@ import gbp_archive as archive
 from gbp_archive.cli.restore import handler as restore
 
 
-@given("builds", "console", "publisher", "tmpdir")
+@given("builds", "console", "publisher", "tmpdir", "cd")
 class RestoreTests(TestCase):
     def test_restore_all(self, fixtures: Fixtures) -> None:
         builds = fixtures.builds
@@ -24,11 +24,10 @@ class RestoreTests(TestCase):
         publisher.publish(first_build)
         last_build = builds[-1]
         publisher.tag(last_build, "last")
-        path = fixtures.tmpdir / "test.tar"
+        path = Path("test.tar")
         dump_builds(builds, path)
         delete_builds(builds)
 
-        path = fixtures.tmpdir / "test.tar"
         cmdline = f"gbp restore -f{path}"
 
         args = parse_args(cmdline)

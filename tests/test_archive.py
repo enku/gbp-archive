@@ -84,7 +84,7 @@ class CoreRestoreTests(TestCase):
             self.assertTrue(publisher.repo.build_records.exists(build))
 
 
-@given("tmpdir", "publisher", build="pulled_build")
+@given("cd", "tmpdir", "publisher", build="pulled_build")
 class StorageDumpTestCase(TestCase):
     """Tests for Storage.dump"""
 
@@ -96,7 +96,7 @@ class StorageDumpTestCase(TestCase):
         publisher.tag(build, "mytag")
 
         # Given the storage, and file object
-        path = fixtures.tmpdir / "dump.tar"
+        path = "dump.tar"
         with open(path, "wb") as out:
 
             # Then we can dump the builds to the file
