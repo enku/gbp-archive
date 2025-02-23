@@ -49,5 +49,5 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
         "-f",
         "--file",
         default="-",
-        help='Filename to restore builds from ("-" for standard out)',
+        help='Filename to restore builds from ("-" for standard in)',
     )
