@@ -25,6 +25,7 @@ def dump(
     """Dump the given builds to the given outfile"""
     builds = list(builds)
     builds.sort(key=lambda build: (build.machine, build.build_id))
+    tmpdir = str(publisher.storage.root / "tmp")
 
     with tar.open(fileobj=outfile, mode="w|") as tarfile:
         fp: IO[bytes]
@@ -38,7 +39,7 @@ def dump(
             tarfile.addfile(tarinfo, fp)
 
         # then dump records
-        with tempfile.SpooledTemporaryFile(mode="w+b") as fp:
+        with tempfile.SpooledTemporaryFile(mode="w+b", dir=tmpdir) as fp:
             my_records = [publisher.repo.build_records.get(build) for build in builds]
             records.dump(my_records, fp, callback=callback)
             fp.seek(0)
@@ -46,7 +47,7 @@ def dump(
             tarfile.addfile(tarinfo, fp)
 
         # then dump storage
-        with tempfile.TemporaryFile(mode="w+b") as fp:
+        with tempfile.TemporaryFile(mode="w+b", dir=tmpdir) as fp:
             storage.dump(builds, fp, callback=callback)
             fp.seek(0)
             tarinfo = tarfile.gettarinfo(arcname="storage.tar", fileobj=fp)
