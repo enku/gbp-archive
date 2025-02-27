@@ -45,8 +45,8 @@ The third item is another tar archive consisting of the "storage" for the
 dumped builds. By storage I mean all of the repos, binpkgs, and configuration
 for builds.  All of them are stored in an inner tar archive called
 `storage.tar`. The reason for the single archive and not one archive per build
-is to preserver the multiple hard links which span across builds (for a given
-machine) but they will not be preserve across multiple archives.
+is to preserve the multiple hard links which span across builds (for a given
+machine). They would not be preserved across multiple archives.
 
 
 ## Restore
