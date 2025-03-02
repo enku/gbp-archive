@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:c24812fba16c29364eeeec670734f6206ce92d0bb5ce8c16d821cb4bce02cf82"
+content_hash = "sha256:09aa95531fe770a3e83997c642fe7a70456159d7087b872e7eb10e1aefc8b3e1"
 
 [[metadata.targets]]
 requires_python = ">=3.11"
@@ -637,10 +637,10 @@ files = [
 
 [[package]]
 name = "gbp-testkit"
-version = "0.1.dev16"
+version = "0.1.dev19"
 requires_python = ">=3.11"
 git = "https://github.com/enku/gbp-testkit.git"
-revision = "d9fb6ad9d90a54d4675b92193fe2d7650f9924f2"
+revision = "df638a927abb81b1d2744e8a68832748db9d25b9"
 summary = "Gentoo Build Publisher testing tools"
 groups = ["dev"]
 dependencies = [
@@ -672,7 +672,7 @@ files = [
 
 [[package]]
 name = "gentoo-build-publisher"
-version = "2.3.0"
+version = "2.4.0rc1"
 requires_python = ">=3.11"
 summary = "Gentoo Build Publisher"
 groups = ["default"]
@@ -690,8 +690,8 @@ dependencies = [
     "yarl!=1.9.1",
 ]
 files = [
-    {file = "gentoo_build_publisher-2.3.0-py3-none-any.whl", hash = "sha256:500f79258ea0f62288a49e579d6964532274ee9c5da4f7d773b4a4b24882d717"},
-    {file = "gentoo_build_publisher-2.3.0.tar.gz", hash = "sha256:c47ef9b204b185f6f2ad7845d74bfadcd3c2217f441aa6dd6817259430b2445a"},
+    {file = "gentoo_build_publisher-2.4.0rc1-py3-none-any.whl", hash = "sha256:93cad2e9f7cfe7872c4a4d3d0523642f34a233d9259252ab4e91e0b2c3e3c878"},
+    {file = "gentoo_build_publisher-2.4.0rc1.tar.gz", hash = "sha256:4c180987127cafcfa75c2ca9c3140dabb2badcad0e4528f1d4f9366fc4e636af"},
 ]
 
 [[package]]
