@@ -5,7 +5,7 @@ description = "A Gentoo Build Publisher plugin to dump & restore builds"
 authors = [
     {name = "Albert Hopkins", email = "marduk@letterboxes.org"},
 ]
-dependencies = ["gbpcli>=2.4.1", "gentoo-build-publisher>=2.3.0", "dateparser>=1.2.1"]
+dependencies = ["gbpcli>=2.5.0b1", "gentoo-build-publisher>=2.3.0", "dateparser>=1.2.1"]
 requires-python = ">=3.11"
 readme = "README.md"
 license = {text = "GPL3+"}

@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:51525248a85278f8a39358be40a53bd5a4c6cc1b0ce8fe13f9a2efc1ff496069"
+content_hash = "sha256:c24812fba16c29364eeeec670734f6206ce92d0bb5ce8c16d821cb4bce02cf82"
 
 [[metadata.targets]]
 requires_python = ">=3.11"
@@ -652,7 +652,7 @@ dependencies = [
 
 [[package]]
 name = "gbpcli"
-version = "2.4.1"
+version = "2.5.0b1"
 requires_python = ">=3.11"
 summary = "Gentoo Build Publisher Command-Line Interface"
 groups = ["default"]
@@ -660,13 +660,14 @@ dependencies = [
     "argcomplete>=3.2.1",
     "distutils-strtobool>=0.1.0",
     "platformdirs>=4.2.0",
+    "python-dotenv>=1.0.1",
     "requests",
     "rich>=12.5.1",
     "yarl",
 ]
 files = [
-    {file = "gbpcli-2.4.1-py3-none-any.whl", hash = "sha256:c3f9a1ce1a8e02915c265f83d87ec024ecaef043963dd50387f9811e58691a9a"},
-    {file = "gbpcli-2.4.1.tar.gz", hash = "sha256:f943f4942cfc7d0a95696ab35b726906e0f2c6c396328abf2c9aa136bb49381b"},
+    {file = "gbpcli-2.5.0b1-py3-none-any.whl", hash = "sha256:51c21091151c045681593edaf556aecb4e3d0aaab96dff52fd2e5e91171adec0"},
+    {file = "gbpcli-2.5.0b1.tar.gz", hash = "sha256:11381d60b6bbd094c24112c16b838194dd65b68ccda586798f0caf551cf0d56f"},
 ]
 
 [[package]]
@@ -1188,6 +1189,17 @@ groups = ["default"]
 files = [
     {file = "python-dispatch-0.2.2.tar.gz", hash = "sha256:d05278ff76625a53865c92ca6b5069e82c27b5741999f7ec737c64180f0123e6"},
     {file = "python_dispatch-0.2.2-py3-none-any.whl", hash = "sha256:0305898bf011fb164bb21e0f48809cf21faee6d8ea311177bd9a43f86201b9cd"},
+]
+
+[[package]]
+name = "python-dotenv"
+version = "1.0.1"
+requires_python = ">=3.8"
+summary = "Read key-value pairs from a .env file and set them as environment variables"
+groups = ["default"]
+files = [
+    {file = "python-dotenv-1.0.1.tar.gz", hash = "sha256:e324ee90a023d808f1959c46bcbc04446a10ced277783dc6ee09987c37ec10ca"},
+    {file = "python_dotenv-1.0.1-py3-none-any.whl", hash = "sha256:f7b63ef50f1b690dddf550d03497b66d609393b40b564ed0d674909a68ebf16a"},
 ]
 
 [[package]]
