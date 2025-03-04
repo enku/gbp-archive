@@ -1,15 +1,15 @@
 """Utilities for restoring gbp dumps"""
 
 import datetime as dt
-import json
 from dataclasses import asdict
 from typing import IO, Iterable
 
+import orjson
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.records import BuildRecord
 
 from gbp_archive.types import DumpCallback
-from gbp_archive.utils import convert_to, decode_to, serializable
+from gbp_archive.utils import convert_to, decode_to
 
 
 def dump(
@@ -21,8 +21,8 @@ def dump(
 
     build_list = [asdict(build) for build in builds]
 
-    serialized = json.dumps(build_list, default=serializable)
-    outfile.write(serialized.encode("utf8"))
+    serialized = orjson.dumps(build_list)  # pylint: disable=no-member
+    outfile.write(serialized)
 
 
 def restore(infile: IO[bytes], *, callback: DumpCallback) -> list[BuildRecord]:
@@ -32,7 +32,7 @@ def restore(infile: IO[bytes], *, callback: DumpCallback) -> list[BuildRecord]:
     """
     restore_list: list[BuildRecord] = []
 
-    items = json.load(infile)
+    items = orjson.loads(infile.read())  # pylint: disable=no-member
     for item in items:
         record = decode_to(BuildRecord, item)
         callback("restore", "records", record)

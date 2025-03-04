@@ -4,26 +4,9 @@ import datetime as dt
 import io
 import tarfile as tar
 from collections import defaultdict
-from dataclasses import asdict, is_dataclass
-from functools import singledispatch
 from typing import Any, Callable, TypeVar
 
 _T = TypeVar("_T")
-
-
-@singledispatch
-def serializable(obj: Any) -> Any:
-    """Return obj as a (JSON) serializable value"""
-    if is_dataclass(obj) and not isinstance(obj, type):
-        return asdict(obj)
-
-    return obj
-
-
-@serializable.register(dt.datetime)
-@serializable.register(dt.date)
-def _(value: dt.date | dt.datetime) -> str:
-    return value.isoformat()
 
 
 _RESOLVERS: defaultdict[type, dict[str, Callable[[Any], Any]]] = defaultdict(dict)

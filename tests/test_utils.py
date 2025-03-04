@@ -10,30 +10,6 @@ from gbp_testkit import TestCase
 from gbp_archive import utils
 
 
-class SerializableTests(TestCase):
-    def test_dataclass(self) -> None:
-        @dataclass
-        class Balance:
-            amount: int
-            currency: str
-
-        balance = Balance(5, "USD")
-
-        value = utils.serializable(balance)
-
-        self.assertEqual({"amount": 5, "currency": "USD"}, value)
-
-    def test_datetime(self) -> None:
-        timezone = dt.timezone(dt.timedelta(hours=-6), "CST")
-        datetime = dt.datetime(2025, 2, 15, 19, 59, tzinfo=timezone)
-        expected = "2025-02-15T19:59:00-06:00"
-
-        self.assertEqual(expected, utils.serializable(datetime))
-
-    def test_already_serializable(self) -> None:
-        self.assertEqual("hello world", "hello world")
-
-
 class DataclassConversionTests(TestCase):
     """Tests both decode_to and convert_to"""
 
