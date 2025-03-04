@@ -3,10 +3,9 @@
 import tarfile as tar
 from typing import IO, Iterable
 
-from gentoo_build_publisher import publisher
+from gentoo_build_publisher import fs, publisher
 from gentoo_build_publisher.types import Build, Content
 
-from gbp_archive import utils
 from gbp_archive.types import DumpCallback
 
 
@@ -14,12 +13,12 @@ def dump(builds: Iterable[Build], fp: IO[bytes], *, callback: DumpCallback) -> N
     """Dump the given builds' storage into the given tarfile"""
     storage = publisher.storage
 
-    with tar.open(fileobj=fp, mode="w|") as tarfile, utils.cd(storage.root):
+    with tar.open(fileobj=fp, mode="w|") as tarfile, fs.cd(storage.root):
         for build in builds:
             callback("dump", "storage", build)
             for content in Content:
                 for tag in [None, *storage.get_tags(build)]:
-                    path = utils.get_path(storage, build, content, tag=tag)
+                    path = storage.get_path(build, content, tag=tag)
                     path = path.relative_to(storage.root)
                     tarfile.add(path)
 
@@ -33,7 +32,7 @@ def restore(fp: IO[bytes], *, callback: DumpCallback) -> list[Build]:
     storage = publisher.storage
     restore_list: list[Build] = []
 
-    with tar.open(fileobj=fp, mode="r|") as tarfile, utils.cd(storage.root):
+    with tar.open(fileobj=fp, mode="r|") as tarfile, fs.cd(storage.root):
         for member in tarfile:
             if is_content_dir(member, Content.REPOS):
                 build = Build.from_id(member.name.split("/", 1)[1])

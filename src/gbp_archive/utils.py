@@ -2,19 +2,11 @@
 
 import datetime as dt
 import io
-import os
 import tarfile as tar
-import warnings
 from collections import defaultdict
-from contextlib import contextmanager
 from dataclasses import asdict, is_dataclass
 from functools import singledispatch
-from pathlib import Path
-from typing import Any, Callable, Generator, TypeVar
-
-from gentoo_build_publisher import fs
-from gentoo_build_publisher.storage import Storage
-from gentoo_build_publisher.types import TAG_SYM, Build, Content
+from typing import Any, Callable, TypeVar
 
 _T = TypeVar("_T")
 
@@ -67,24 +59,6 @@ def convert_to(type_: type, field: str) -> Callable[[Any], Any]:
     return decorate
 
 
-if hasattr(fs, "cd"):
-    warnings.warn(
-        "gentoo_build_publisher.fs now has the cd function",
-        DeprecationWarning,
-        stacklevel=1,
-    )
-
-
-@contextmanager
-def cd(path: str | os.PathLike[str]) -> Generator[None, None, None]:
-    """Context manager to change to the given directory"""
-    orig_dir = os.getcwd()
-
-    os.chdir(path)
-    yield
-    os.chdir(orig_dir)
-
-
 def bytes_io_to_tarinfo(
     arcname: str, fp: io.BytesIO, mode: int = 0o0644, mtime: int | None = None
 ) -> tar.TarInfo:
@@ -97,24 +71,3 @@ def bytes_io_to_tarinfo(
     )
 
     return tarinfo
-
-
-# These are in GBP proper but not yet released
-def get_path(
-    storage: Storage, build: Build, content: Content, tag: str | None = None
-) -> Path:
-    """Return the Path of the content type for build"""
-    try:
-        path = storage.get_path(build, content, tag=tag)
-    except TypeError:
-        if tag is None:
-            return storage.get_path(build, content)
-
-        name = f"{build.machine}{TAG_SYM}{tag}" if tag else build.machine
-        return storage.root.joinpath(content.value, name)
-
-    # If we got here, we're on a recent GBP and don't need this
-    msg = "This function is obsolete. Use the GBP one"
-    warnings.warn(msg, DeprecationWarning, stacklevel=1)
-
-    return path

@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:09aa95531fe770a3e83997c642fe7a70456159d7087b872e7eb10e1aefc8b3e1"
+content_hash = "sha256:99a0a12e4440172ca029df1fcca451514101e74caca989cb925be8fe5c28267f"
 
 [[metadata.targets]]
 requires_python = ">=3.11"
@@ -672,7 +672,7 @@ files = [
 
 [[package]]
 name = "gentoo-build-publisher"
-version = "2.4.0rc1"
+version = "2.4.0"
 requires_python = ">=3.11"
 summary = "Gentoo Build Publisher"
 groups = ["default"]
@@ -682,7 +682,7 @@ dependencies = [
     "celery[msgpack]",
     "cryptography>=42.0.4",
     "django",
-    "gbpcli>=2.4.1",
+    "gbpcli>=2.5.0b1",
     "orjson>=3.9.1",
     "python-dispatch>=0.2.1",
     "requests",
@@ -690,8 +690,8 @@ dependencies = [
     "yarl!=1.9.1",
 ]
 files = [
-    {file = "gentoo_build_publisher-2.4.0rc1-py3-none-any.whl", hash = "sha256:93cad2e9f7cfe7872c4a4d3d0523642f34a233d9259252ab4e91e0b2c3e3c878"},
-    {file = "gentoo_build_publisher-2.4.0rc1.tar.gz", hash = "sha256:4c180987127cafcfa75c2ca9c3140dabb2badcad0e4528f1d4f9366fc4e636af"},
+    {file = "gentoo_build_publisher-2.4.0-py3-none-any.whl", hash = "sha256:544aa5d78b97521676f371d8005ab0fe9c3e84662bf87a930fe2089a8222bdcc"},
+    {file = "gentoo_build_publisher-2.4.0.tar.gz", hash = "sha256:ccc775d70eda5af014ea2770688d008130ebcc74ad4bfdd17aea9960899702c2"},
 ]
 
 [[package]]
