@@ -16,6 +16,23 @@ Then restoring is as simple as running `gbp restore`:
 
 ![screenshot](https://raw.githubusercontent.com/enku/screenshots/refs/heads/master/gbp-archive/restore-usage.svg)
 
+## Installation
+
+This assumes you already have a working Gentoo Build Publisher installation.
+If not refer to the GBP [Install
+Guide](https://github.com/enku/gentoo-build-publisher/blob/master/docs/how-to-install.md)
+first.
+
+Install the gbp-archive package onto the GBP instance.
+
+```sh
+cd /home/gbp
+sudo -u gbp -H ./bin/pip install gbp-archive
+```
+
+There is no need to restart any services after installation.
+
+
 ## Process
 
 ### Dump
