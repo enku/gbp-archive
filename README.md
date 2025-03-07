@@ -2,7 +2,7 @@
 
 A Gentoo Build Publisher plugin to dump & restore builds.
 
-# Description
+## Description
 
 The `gbp-archive` package provides two subcommands for gbpcli: `dump` and
 `restore`. These subcommands are "server-only" meaning they are only available
@@ -16,14 +16,14 @@ Then restoring is as simple as running `gbp restore`:
 
 ![screenshot](https://raw.githubusercontent.com/enku/screenshots/refs/heads/master/gbp-archive/restore-usage.svg)
 
-# Process
+## Process
 
-## Dump
+### Dump
 
 How the dump process works is a tar archive is created. Inside that tar
 archive are 3 items:
 
-### Metadata
+#### Metadata
 
 The first item is a JSON file containing metadata for the dump. Currently the
 metadata are:
@@ -33,13 +33,13 @@ metadata are:
 - The hostname of the GBP instance that created the dump
 - The list of builds included in the dump
 
-### Records
+#### Records
 
 The second item is a file which includes all the "records" for the dumped
 builds.  This is the build metadata stored the GBP database. This information
 is serialized into JSON and stored in a single file, `records.json`.
 
-### Storage
+#### Storage
 
 The third item is another tar archive consisting of the "storage" for the
 dumped builds. By storage I mean all of the repos, binpkgs, and configuration
@@ -49,7 +49,7 @@ is to preserve the multiple hard links which span across builds (for a given
 machine). They would not be preserved across multiple archives.
 
 
-## Restore
+### Restore
 
 For the restore process, we open the outer tar archive and then the
 `records.json` file is deserialized and loaded into the instance's database.
