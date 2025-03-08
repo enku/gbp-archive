@@ -71,7 +71,7 @@ class RestoreTests(TestCase):
 
     def test_verbose_flag(self, fixtures: Fixtures) -> None:
         builds = fixtures.builds
-        builds.sort(key=lambda build: (build.machine, build.build_id))
+        builds.sort(key=lambda build: (build.machine, int(build.build_id)))
         restore_image = io.BytesIO()
         archive.dump(builds, restore_image)
         delete_builds(builds)

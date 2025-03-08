@@ -24,7 +24,7 @@ def dump(
 ) -> None:
     """Dump the given builds to the given outfile"""
     builds = list(builds)
-    builds.sort(key=lambda build: (build.machine, build.build_id))
+    builds.sort(key=lambda build: (build.machine, int(build.build_id)))
 
     with tar.open(fileobj=outfile, mode="w|") as tarfile:
         fp: IO[bytes]
