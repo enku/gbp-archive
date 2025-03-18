@@ -66,14 +66,6 @@ def restore(
 ) -> None:
     """Restore builds from the given infile"""
     with tar.open(fileobj=infile, mode="r|") as tarfile:
-        # First restore the metadata. Currently nothing is done with it
-        fp = tarfile_extract(tarfile, tarfile_next(tarfile))
-        metadata.restore(fp, callback=callback)
-
-        # Then restore the records
-        fp = tarfile_extract(tarfile, tarfile_next(tarfile))
-        records.restore(fp, callback=callback)
-
-        # Then restore the storage
-        fp = tarfile_extract(tarfile, tarfile_next(tarfile))
-        storage.restore(fp, callback=callback)
+        for item in metadata, records, storage:
+            fp = tarfile_extract(tarfile, tarfile_next(tarfile))
+            item.restore(fp, callback=callback)
