@@ -11,7 +11,7 @@ from gentoo_build_publisher.utils import time
 
 from gbp_archive import metadata, records, storage
 from gbp_archive.types import DumpCallback, default_dump_callback
-from gbp_archive.utils import bytes_io_to_tarinfo
+from gbp_archive.utils import bytes_io_to_tarinfo, tarfile_extract, tarfile_next
 
 METADATA_NAME = "gbp-archive"
 
@@ -56,10 +56,7 @@ def dump(
 def tabulate(infile: IO[bytes]) -> list[Build]:
     """Return the list of builds in the archive"""
     with tar.open(fileobj=infile, mode="r|") as tarfile:
-        member = tarfile.next()
-        assert member is not None
-        fp = tarfile.extractfile(member)
-        assert fp is not None
+        fp = tarfile_extract(tarfile, tarfile_next(tarfile))
         m = metadata.restore(fp, callback=None)
         return [Build.from_id(i) for i in m["manifest"]]
 
@@ -70,22 +67,13 @@ def restore(
     """Restore builds from the given infile"""
     with tar.open(fileobj=infile, mode="r|") as tarfile:
         # First restore the metadata. Currently nothing is done with it
-        member = tarfile.next()
-        assert member is not None
-        fp = tarfile.extractfile(member)
-        assert fp is not None
+        fp = tarfile_extract(tarfile, tarfile_next(tarfile))
         metadata.restore(fp, callback=callback)
 
         # Then restore the records
-        member = tarfile.next()
-        assert member is not None
-        fp = tarfile.extractfile(member)
-        assert fp is not None
+        fp = tarfile_extract(tarfile, tarfile_next(tarfile))
         records.restore(fp, callback=callback)
 
         # Then restore the storage
-        member = tarfile.next()
-        assert member is not None
-        fp = tarfile.extractfile(member)
-        assert fp is not None
+        fp = tarfile_extract(tarfile, tarfile_next(tarfile))
         storage.restore(fp, callback=callback)
