@@ -10,6 +10,8 @@ from gbp_archive import metadata, records, storage
 from gbp_archive.types import DumpCallback, default_dump_callback
 from gbp_archive.utils import tarfile_extract, tarfile_next
 
+ARCHIVE_ITEMS = (metadata, records, storage)
+
 
 def dump(
     builds: Iterable[Build],
@@ -21,7 +23,7 @@ def dump(
     builds = sorted(builds, key=lambda build: (build.machine, int(build.build_id)))
 
     with tar.open(fileobj=outfile, mode="w|") as tarfile:
-        for item in metadata, records, storage:
+        for item in ARCHIVE_ITEMS:
             with tempfile.TemporaryFile(mode="w+b") as fp:
                 item.dump(builds, fp, callback=callback)
                 fp.seek(0)
@@ -42,6 +44,6 @@ def restore(
 ) -> None:
     """Restore builds from the given infile"""
     with tar.open(fileobj=infile, mode="r|") as tarfile:
-        for item in metadata, records, storage:
+        for item in ARCHIVE_ITEMS:
             fp = tarfile_extract(tarfile, tarfile_next(tarfile))
             item.restore(fp, callback=callback)
