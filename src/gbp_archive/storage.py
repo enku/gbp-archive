@@ -8,6 +8,8 @@ from gentoo_build_publisher.types import Build, Content
 
 from gbp_archive.types import DumpCallback
 
+ARCHIVE_NAME = "storage.tar"
+
 
 def dump(builds: Iterable[Build], fp: IO[bytes], *, callback: DumpCallback) -> None:
     """Dump the given builds' storage into the given tarfile"""

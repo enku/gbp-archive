@@ -1,7 +1,5 @@
 """Misc. utilities for gbp-archive"""
 
-import datetime as dt
-import io
 import tarfile as tar
 from collections import defaultdict
 from typing import IO, Any, Callable, TypeVar
@@ -40,20 +38,6 @@ def convert_to(type_: type, field: str) -> Callable[[Any], Any]:
         return func
 
     return decorate
-
-
-def bytes_io_to_tarinfo(
-    arcname: str, fp: io.BytesIO, mode: int = 0o0644, mtime: int | None = None
-) -> tar.TarInfo:
-    """Return a TarInfo given BytesIO and archive name"""
-    tarinfo = tar.TarInfo(arcname)
-    tarinfo.size = len(fp.getvalue())
-    tarinfo.mode = mode
-    tarinfo.mtime = (
-        mtime if mtime is not None else int(dt.datetime.utcnow().timestamp())
-    )
-
-    return tarinfo
 
 
 def tarfile_next(tarfile: tar.TarFile) -> tar.TarInfo:

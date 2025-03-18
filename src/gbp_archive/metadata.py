@@ -5,7 +5,9 @@ import json
 from typing import IO, Any, Iterable, TypedDict, cast
 
 from gentoo_build_publisher.types import Build
-from gentoo_build_publisher.utils import get_hostname
+from gentoo_build_publisher.utils import get_hostname, time
+
+ARCHIVE_NAME = "gbp-archive"
 
 
 class Metadata(TypedDict):
@@ -24,12 +26,13 @@ class Metadata(TypedDict):
 
 
 def dump(
-    metadata: Metadata,
+    builds: Iterable[Build],
     fp: IO[bytes],
     *,
     callback: Any,  # pylint: disable=unused-argument
 ) -> None:
     """Write the given metadata to the given file"""
+    metadata = create(builds, timestamp=time.localtime())
     fp.write(json.dumps(metadata).encode("utf8"))
 
 

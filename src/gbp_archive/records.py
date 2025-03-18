@@ -7,19 +7,23 @@ from typing import IO, Iterable
 import orjson
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.records import BuildRecord
+from gentoo_build_publisher.types import Build
 
 from gbp_archive.types import DumpCallback
 from gbp_archive.utils import convert_to, decode_to
 
+ARCHIVE_NAME = "records.json"
+
 
 def dump(
-    builds: Iterable[BuildRecord], outfile: IO[bytes], *, callback: DumpCallback
+    builds: Iterable[Build], outfile: IO[bytes], *, callback: DumpCallback
 ) -> None:
     """Dump the given builds as JSON to the given file"""
     for build in (builds := list(builds)):
         callback("dump", "records", build)
 
-    build_list = [asdict(build) for build in builds]
+    records = [publisher.repo.build_records.get(build) for build in builds]
+    build_list = [asdict(record) for record in records]
 
     serialized = orjson.dumps(build_list)  # pylint: disable=no-member
     outfile.write(serialized)
