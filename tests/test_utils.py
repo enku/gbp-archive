@@ -2,10 +2,12 @@
 
 # pylint: disable=missing-docstring
 import datetime as dt
+import tarfile as tar
 from dataclasses import dataclass
 from decimal import Decimal
 
 from gbp_testkit import TestCase
+from unittest_fixtures import Fixtures, given, where
 
 from gbp_archive import utils
 
@@ -33,3 +35,20 @@ class DataclassConversionTests(TestCase):
 
         expected = MyDataclass("marduk", Decimal("5.00"), dt.date(2025, 2, 16))
         self.assertEqual(expected, result)
+
+
+@given("tarfile")
+@where(**{"tarfile__dir/test.txt": b"test"})
+class TarfileExtractTests(TestCase):
+    def test(self, fixtures: Fixtures) -> None:
+        tarfile = fixtures.tarfile
+
+        fp = utils.tarfile_extract(tarfile, "dir/test.txt")
+
+        self.assertEqual(b"test", fp.read())
+
+    def test_directory_member(self, fixtures: Fixtures) -> None:
+        tarfile = fixtures.tarfile
+
+        with self.assertRaises(tar.ReadError):
+            utils.tarfile_extract(tarfile, "dir")

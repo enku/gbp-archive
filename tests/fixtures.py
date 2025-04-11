@@ -1,8 +1,10 @@
 """Fixtures for gbp-archive"""
 
-# pylint: disable=missing-docstring,redefined-outer-name
+# pylint: disable=missing-docstring,redefined-outer-name,unused-argument
 
+import io
 import os
+import tarfile as tar
 from pathlib import Path
 from typing import Iterable, cast
 
@@ -42,6 +44,30 @@ def cd(fixtures: Fixtures, *, cd: Path | None = None) -> FixtureContext[Path]:
     os.chdir(cd)
     yield cd
     os.chdir(cwd)
+
+
+@fixture("tmpdir")
+def tarfile(
+    fixtures: Fixtures, *, tarfile: str = "test.tar", **members: bytes
+) -> tar.TarFile:
+    bytes_io = io.BytesIO()
+    with tar.open(tarfile, "w", fileobj=bytes_io) as tp:
+        for name, data in members.items():
+
+            parents = name.split("/")[:-1]
+            for i in range(len(parents)):
+                dirpath = "/".join(parents[: i + 1])
+                tarinfo = tar.TarInfo(name=dirpath)
+                tarinfo.size = 0
+                tarinfo.type = tar.DIRTYPE
+                tp.addfile(tarinfo)
+
+            tarinfo = tar.TarInfo(name=name)
+            tarinfo.size = len(data)
+            tp.addfile(tarinfo, fileobj=io.BytesIO(data))
+
+    bytes_io.seek(0)
+    return tar.open(tarfile, "r", fileobj=bytes_io)
 
 
 __all__ = (

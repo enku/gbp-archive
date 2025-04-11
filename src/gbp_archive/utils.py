@@ -50,7 +50,7 @@ def tarfile_next(tarfile: tar.TarFile) -> tar.TarInfo:
     raise tar.ReadError("Unexpected end of archive")
 
 
-def tarfile_extract(tarfile: tar.TarFile, member: tar.TarInfo) -> IO[bytes]:
+def tarfile_extract(tarfile: tar.TarFile, member: tar.TarInfo | str) -> IO[bytes]:
     """Extract the given member from the given tarfile
 
     If the member does not exist in the tarfile, raise ReadError.
