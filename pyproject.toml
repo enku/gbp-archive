@@ -30,7 +30,7 @@ dev = [
     "pylint-django>=2.6.1",
     "django-stubs>=5.1.3",
     "unittest-fixtures",
-    "gbp-testkit @ git+https://github.com/enku/gbp-testkit.git",
+    "gentoo-build-publisher[test] @ git+https://github.com/enku/gentoo-build-publisher.git@master",
 ]
 
 [tool.black]
