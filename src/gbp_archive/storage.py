@@ -3,8 +3,9 @@
 import tarfile as tar
 from typing import IO, Iterable
 
-from gentoo_build_publisher import fs, publisher
+from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build, Content
+from gentoo_build_publisher.utils import fs
 
 from gbp_archive.types import DumpCallback
 
