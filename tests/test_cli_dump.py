@@ -1,6 +1,6 @@
 """Tests for the cli dump subcommand"""
 
-# pylint: disable=missing-docstring
+# pylint: disable=missing-docstring,unused-argument
 
 import io
 import json
@@ -61,10 +61,50 @@ class DumpTests(TestCase):
 
         status = dump(args, gbp, console)
 
-        self.assertEqual(0, status)
+        self.assertEqual(0, status, console.err.file.getvalue())
         self.assertTrue(path.exists())
 
         self.assertEqual(1, len(records(path)))
+
+    def test_given_build_tag(self, fixtures: Fixtures) -> None:
+        publisher = fixtures.publisher
+        builds = fixtures.builds
+        build = builds[-1]
+        publisher.publish(build)
+
+        path = Path("test.tar")
+        cmdline = f"gbp dump -f {path} {build.machine}@"
+
+        args = parse_args(cmdline)
+        gbp = mock.Mock()
+        console = fixtures.console
+
+        status = dump(args, gbp, console)
+
+        self.assertEqual(0, status, console.err.file.getvalue())
+        self.assertTrue(path.exists())
+
+        self.assertEqual(1, len(records(path)))
+
+    def test_given_build_tag_does_not_exist(self, fixtures: Fixtures) -> None:
+        publisher = fixtures.publisher
+        builds = fixtures.builds
+        build = builds[-1]
+        publisher.publish(build)
+
+        path = Path("test.tar")
+        buildspec = f"{build.machine}@bogus"
+        cmdline = f"gbp dump -f {path} {buildspec}"
+
+        args = parse_args(cmdline)
+        gbp = mock.Mock()
+        console = fixtures.console
+
+        status = dump(args, gbp, console)
+
+        self.assertEqual(1, status)
+        self.assertFalse(path.exists())
+        self.assertEqual(f"{buildspec} not found.\n", console.err.file.getvalue())
 
     def test_dump_to_stdout(self, fixtures: Fixtures) -> None:
         cmdline = "gbp dump"

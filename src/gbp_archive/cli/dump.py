@@ -10,7 +10,7 @@ from gbpcli.types import Console
 from gbpcli.utils import EPOCH
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.records import BuildRecord
-from gentoo_build_publisher.types import Build
+from gentoo_build_publisher.types import TAG_SYM, Build
 
 import gbp_archive as archive
 from gbp_archive.types import DumpPhase, DumpType
@@ -121,21 +121,31 @@ def builds_from_spec(buildspec: str, builds: set[BuildRecord]) -> set[BuildRecor
 
         - <machine> Returns all the builds for the given machine
         - <machine>.<build_id> Returns the given build
+        - <machine>@<tag> Returns the given build
 
     If the given machine or build doesn't exist in the build records,
     BuildSpecLookupError is raised.
     """
-    subset: set[BuildRecord] = set()
+    subset: set[BuildRecord]
     machine, _, build_id = buildspec.partition(".")
 
     if build_id:
-        if bs := {b for b in builds if b.machine == machine and b.build_id == build_id}:
-            subset.update(bs)
-        else:
-            raise BuildSpecLookupError(buildspec)
+        subset = {b for b in builds if b.machine == machine and b.build_id == build_id}
     else:
-        if bs := {b for b in builds if b.machine == machine}:
-            subset.update(bs)
+        machine, _, tag = buildspec.partition(TAG_SYM)
+        if tag:
+            storage = publisher.storage
+            records = publisher.repo.build_records
+            try:
+                subset ={records.get(storage.resolve_tag(buildspec))}
+            except FileNotFoundError:
+                subset = set()
         else:
-            raise BuildSpecLookupError(buildspec)
+            subset = {build for build in builds if build.machine == machine}
+
+    subset = subset & builds
+
+    if not subset:
+        raise BuildSpecLookupError(buildspec)
+
     return subset
