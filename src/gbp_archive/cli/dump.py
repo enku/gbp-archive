@@ -141,8 +141,8 @@ def builds_from_spec(buildspec: str, builds: set[BuildRecord]) -> set[BuildRecor
     if build_id:
         subset = {b for b in builds if b.machine == machine and b.build_id == build_id}
     else:
-        machine, _, tag = buildspec.partition(TAG_SYM)
-        if tag:
+        machine, tag_sym, _ = buildspec.partition(TAG_SYM)
+        if tag_sym:
             storage = publisher.storage
             records = publisher.repo.build_records
             try:
