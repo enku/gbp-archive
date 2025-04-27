@@ -15,7 +15,16 @@ from gentoo_build_publisher.types import TAG_SYM, Build
 import gbp_archive as archive
 from gbp_archive.types import DumpPhase, DumpType
 
-HELP = "Dump builds to a file"
+HELP = """Dump builds to a file.
+
+The machines argument(s) take the following forms
+    - machine name (for example "lighthouse")
+    - machine.build_id (for example "lighthouse.12345")
+    - machine@tag (for example "lighthouse@stable" or "lighthouse@")
+    - any combination of the above
+
+If no machines arguments are given, all builds from all machines are dumped.
+"""
 
 
 class BuildSpecLookupError(LookupError):
