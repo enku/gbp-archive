@@ -11,6 +11,7 @@ from unittest import TestCase, mock
 
 from gbp_testkit.helpers import parse_args, print_command
 from gbpcli.utils import EPOCH
+from gentoo_build_publisher import publisher
 from unittest_fixtures import Fixtures, given
 
 from gbp_archive.cli.dump import handler as dump
@@ -67,7 +68,6 @@ class DumpTests(TestCase):
         self.assertEqual(1, len(records(path)))
 
     def test_given_build_tag(self, fixtures: Fixtures) -> None:
-        publisher = fixtures.publisher
         builds = fixtures.builds
         build = builds[-1]
         publisher.publish(build)
@@ -87,7 +87,6 @@ class DumpTests(TestCase):
         self.assertEqual(1, len(records(path)))
 
     def test_given_build_tag_does_not_exist(self, fixtures: Fixtures) -> None:
-        publisher = fixtures.publisher
         builds = fixtures.builds
         build = builds[-1]
         publisher.publish(build)
@@ -180,7 +179,6 @@ class DumpTests(TestCase):
 
     def test_newer_flag(self, fixtures: Fixtures) -> None:
         builds = fixtures.builds
-        publisher = fixtures.publisher
 
         for build in builds[:2]:
             record = publisher.repo.build_records.get(build)
