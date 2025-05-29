@@ -52,3 +52,11 @@ class TarfileExtractTests(TestCase):
 
         with self.assertRaises(tar.ReadError):
             utils.tarfile_extract(tarfile, "dir")
+
+    def test_read_error(self, fixtures: Fixtures) -> None:
+        tarfile = fixtures.tarfile
+        member = tar.TarInfo("/dev/random")
+        member.type = tar.CHRTYPE
+
+        with self.assertRaises(tar.ReadError):
+            utils.tarfile_extract(tarfile, member)
