@@ -36,7 +36,7 @@ def tabulate(infile: IO[bytes]) -> list[Build]:
     with tar.open(fileobj=infile, mode="r|") as tarfile:
         fp = tarfile_extract(tarfile, tarfile_next(tarfile))
         m = metadata.restore(fp, callback=None)
-        return [Build.from_id(i) for i in m["manifest"]]
+    return [Build.from_id(i) for i in m["manifest"]]
 
 
 def restore(
