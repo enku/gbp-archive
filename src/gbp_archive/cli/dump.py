@@ -146,7 +146,7 @@ def builds_from_spec(buildspec: str, builds: set[BuildRecord]) -> set[BuildRecor
             storage = publisher.storage
             records = publisher.repo.build_records
             try:
-                subset ={records.get(storage.resolve_tag(buildspec))}
+                subset = {records.get(storage.resolve_tag(buildspec))}
             except FileNotFoundError:
                 subset = set()
         else:
