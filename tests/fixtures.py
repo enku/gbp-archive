@@ -8,20 +8,20 @@ import tarfile as tar
 from pathlib import Path
 from typing import Iterable, cast
 
+import gbp_testkit.fixtures as testkit
 from gbp_testkit.factories import BuildFactory
-from gbp_testkit.fixtures import build, console, environ, publisher, settings, tmpdir
 from gentoo_build_publisher.types import Build
 from unittest_fixtures import FixtureContext, Fixtures, fixture
 
 
-@fixture("build", "publisher", "tmpdir")
+@fixture(testkit.build, testkit.publisher, testkit.tmpdir)
 def pulled_build(fixtures: Fixtures) -> Build:
     fixtures.publisher.pull(fixtures.build)
 
     return cast(Build, fixtures.build)
 
 
-@fixture("publisher")
+@fixture(testkit.publisher)
 def builds(
     fixtures: Fixtures, machines: Iterable[tuple[str, int]] | None = None
 ) -> list[Build]:
@@ -36,7 +36,7 @@ def builds(
     return builds_
 
 
-@fixture("tmpdir")
+@fixture(testkit.tmpdir)
 def cd(fixtures: Fixtures, *, cd: Path | None = None) -> FixtureContext[Path]:
     """Changes to the given directory (tmpdir by default)"""
     cwd = cwd = os.getcwd()
@@ -46,7 +46,7 @@ def cd(fixtures: Fixtures, *, cd: Path | None = None) -> FixtureContext[Path]:
     os.chdir(cwd)
 
 
-@fixture("tmpdir")
+@fixture(testkit.tmpdir)
 def tarfile(
     fixtures: Fixtures, *, tarfile: str = "test.tar", **members: bytes
 ) -> tar.TarFile:
@@ -68,14 +68,3 @@ def tarfile(
 
     bytes_io.seek(0)
     return tar.open(tarfile, "r", fileobj=bytes_io)
-
-
-__all__ = (
-    "build",
-    "console",
-    "environ",
-    "publisher",
-    "pulled_build",
-    "settings",
-    "tmpdir",
-)

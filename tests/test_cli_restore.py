@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Iterable
 from unittest import TestCase, mock
 
+import gbp_testkit.fixtures as testkit
 from gbp_testkit.helpers import parse_args, print_command
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
@@ -15,8 +16,10 @@ from unittest_fixtures import Fixtures, given
 import gbp_archive as archive
 from gbp_archive.cli.restore import handler as restore
 
+from . import fixtures as tf
 
-@given("builds", "console", "publisher", "tmpdir", "cd")
+
+@given(tf.builds, testkit.console, testkit.publisher, tf.cd)
 class RestoreTests(TestCase):
     def test_restore_all(self, fixtures: Fixtures) -> None:
         builds = fixtures.builds

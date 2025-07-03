@@ -11,6 +11,8 @@ from unittest_fixtures import Fixtures, given, where
 
 from gbp_archive import utils
 
+from . import fixtures as tf
+
 
 class DataclassConversionTests(TestCase):
     """Tests both decode_to and convert_to"""
@@ -37,7 +39,7 @@ class DataclassConversionTests(TestCase):
         self.assertEqual(expected, result)
 
 
-@given("tarfile")
+@given(tf.tarfile)
 @where(**{"tarfile__dir/test.txt": b"test"})
 class TarfileExtractTests(TestCase):
     def test(self, fixtures: Fixtures) -> None:

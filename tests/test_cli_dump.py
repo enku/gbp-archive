@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, cast
 from unittest import TestCase, mock
 
+import gbp_testkit.fixtures as testkit
 from gbp_testkit.helpers import parse_args, print_command
 from gbpcli.utils import EPOCH
 from gentoo_build_publisher import publisher
@@ -16,8 +17,10 @@ from unittest_fixtures import Fixtures, given
 
 from gbp_archive.cli.dump import handler as dump
 
+from . import fixtures as tf
 
-@given("publisher", "builds", "console", "tmpdir", "cd")
+
+@given(testkit.publisher, tf.builds, testkit.console, testkit.tmpdir, tf.cd)
 class DumpTests(TestCase):
     def test_dump_all(self, fixtures: Fixtures) -> None:
         path = Path("test.tar")

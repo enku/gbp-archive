@@ -7,6 +7,7 @@ import json
 import tarfile as tar
 from unittest import TestCase, mock
 
+import gbp_testkit.fixtures as testkit
 from gbp_testkit.factories import BuildFactory
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
@@ -14,8 +15,10 @@ from unittest_fixtures import Fixtures, given
 
 import gbp_archive as archive
 
+from . import fixtures as tf
 
-@given("publisher")
+
+@given(testkit.publisher)
 class CoreDumpTests(TestCase):
     # pylint: disable=unused-argument
     def test(self, fixtures: Fixtures) -> None:
@@ -56,7 +59,7 @@ class CoreDumpTests(TestCase):
                 self.assertEqual(6, len(data))
 
 
-@given("publisher")
+@given(testkit.publisher)
 class CoreRestoreTests(TestCase):
     # pylint: disable=unused-argument
     def test(self, fixtures: Fixtures) -> None:
@@ -84,7 +87,7 @@ class CoreRestoreTests(TestCase):
             self.assertTrue(publisher.repo.build_records.exists(build))
 
 
-@given("cd", "tmpdir", "publisher", build="pulled_build")
+@given(tf.cd, testkit.tmpdir, testkit.publisher, build=tf.pulled_build)
 class StorageDumpTestCase(TestCase):
     """Tests for Storage.dump"""
 
@@ -122,7 +125,7 @@ class StorageDumpTestCase(TestCase):
         callback.assert_called_once_with("dump", "storage", build)
 
 
-@given("tmpdir", "publisher", build="pulled_build")
+@given(testkit.tmpdir, testkit.publisher, build=tf.pulled_build)
 class StorageRestoreTests(TestCase):
     """Tests for storage.restore"""
 
