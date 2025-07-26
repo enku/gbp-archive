@@ -15,7 +15,7 @@ from unittest_fixtures import Fixtures, given
 
 import gbp_archive as archive
 
-from . import fixtures as tf
+from . import lib
 
 
 @given(testkit.publisher)
@@ -87,7 +87,7 @@ class CoreRestoreTests(TestCase):
             self.assertTrue(publisher.repo.build_records.exists(build))
 
 
-@given(tf.cd, testkit.tmpdir, testkit.publisher, build=tf.pulled_build)
+@given(lib.cd, testkit.tmpdir, testkit.publisher, build=lib.pulled_build)
 class StorageDumpTestCase(TestCase):
     """Tests for Storage.dump"""
 
@@ -125,7 +125,7 @@ class StorageDumpTestCase(TestCase):
         callback.assert_called_once_with("dump", "storage", build)
 
 
-@given(testkit.tmpdir, testkit.publisher, build=tf.pulled_build)
+@given(testkit.tmpdir, testkit.publisher, build=lib.pulled_build)
 class StorageRestoreTests(TestCase):
     """Tests for storage.restore"""
 

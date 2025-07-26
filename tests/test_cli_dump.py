@@ -17,10 +17,10 @@ from unittest_fixtures import Fixtures, given
 
 from gbp_archive.cli.dump import handler as dump
 
-from . import fixtures as tf
+from . import lib
 
 
-@given(testkit.publisher, tf.builds, testkit.console, testkit.tmpdir, tf.cd)
+@given(testkit.publisher, lib.builds, testkit.console, testkit.tmpdir, lib.cd)
 class DumpTests(TestCase):
     def test_dump_all(self, fixtures: Fixtures) -> None:
         path = Path("test.tar")

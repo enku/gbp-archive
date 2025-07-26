@@ -16,10 +16,10 @@ from unittest_fixtures import Fixtures, given
 import gbp_archive as archive
 from gbp_archive.cli.restore import handler as restore
 
-from . import fixtures as tf
+from . import lib
 
 
-@given(tf.builds, testkit.console, testkit.publisher, tf.cd)
+@given(lib.builds, testkit.console, testkit.publisher, lib.cd)
 class RestoreTests(TestCase):
     def test_restore_all(self, fixtures: Fixtures) -> None:
         builds = fixtures.builds
