@@ -1,6 +1,6 @@
 """Fixtures for gbp-archive"""
 
-# pylint: disable=missing-docstring,redefined-outer-name,unused-argument
+# pylint: disable=redefined-outer-name,unused-argument
 
 import io
 import os
@@ -16,6 +16,7 @@ from unittest_fixtures import FixtureContext, Fixtures, fixture
 
 @fixture(testkit.build, testkit.publisher, testkit.tmpdir)
 def pulled_build(fixtures: Fixtures) -> Build:
+    """A build that has been pulled"""
     fixtures.publisher.pull(fixtures.build)
 
     return cast(Build, fixtures.build)
@@ -25,6 +26,7 @@ def pulled_build(fixtures: Fixtures) -> Build:
 def builds(
     fixtures: Fixtures, machines: Iterable[tuple[str, int]] | None = None
 ) -> list[Build]:
+    """A series of (pulled) builds"""
     builds_: list[Build] = []
     if machines is None:
         machines = [("lighthouse", 3), ("polaris", 2), ("babette", 1)]
@@ -50,6 +52,7 @@ def cd(fixtures: Fixtures, *, cd: Path | None = None) -> FixtureContext[Path]:
 def tarfile(
     fixtures: Fixtures, *, tarfile: str = "test.tar", **members: bytes
 ) -> tar.TarFile:
+    """A tarfile in tmpdir with the given contents"""
     bytes_io = io.BytesIO()
     with tar.open(tarfile, "w", fileobj=bytes_io) as tp:
         for name, data in members.items():
