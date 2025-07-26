@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Run tests for Gentoo Build Publisher"""
+"""Run tests for gbp-archive"""
 import argparse
 import os
 import sys
