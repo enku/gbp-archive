@@ -8,25 +8,21 @@ import tarfile as tar
 from unittest import TestCase, mock
 
 import gbp_testkit.fixtures as testkit
-from gbp_testkit.factories import BuildFactory
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
-from unittest_fixtures import Fixtures, given
+from unittest_fixtures import Fixtures, given, where
 
 import gbp_archive as archive
 
 from . import lib
 
 
-@given(testkit.publisher)
+@given(testkit.publisher, lib.builds)
+@where(builds__machines=[("foo", 3), ("bar", 2), ("baz", 1)])
 class CoreDumpTests(TestCase):
     # pylint: disable=unused-argument
     def test(self, fixtures: Fixtures) -> None:
-        builds = [
-            *BuildFactory.create_batch(3, machine="foo"),
-            *BuildFactory.create_batch(2, machine="bar"),
-            *BuildFactory.create_batch(1, machine="baz"),
-        ]
+        builds = fixtures.builds
         for build in builds:
             publisher.pull(build)
 
@@ -59,15 +55,12 @@ class CoreDumpTests(TestCase):
                 self.assertEqual(6, len(data))
 
 
-@given(testkit.publisher)
+@given(testkit.publisher, lib.builds)
+@where(builds__machines=[("foo", 3), ("bar", 2), ("baz", 1)])
 class CoreRestoreTests(TestCase):
     # pylint: disable=unused-argument
     def test(self, fixtures: Fixtures) -> None:
-        builds = [
-            *BuildFactory.create_batch(3, machine="foo"),
-            *BuildFactory.create_batch(2, machine="bar"),
-            *BuildFactory.create_batch(1, machine="baz"),
-        ]
+        builds = fixtures.builds
         for build in builds:
             publisher.pull(build)
 
