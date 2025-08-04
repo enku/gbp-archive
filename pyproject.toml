@@ -14,6 +14,10 @@ license = {text = "GPL3+"}
 dump = "gbp_archive.cli.dump"
 restore = "gbp_archive.cli.restore"
 
+[project.urls]
+homepage = "https://github.com/enku/gbp-archive"
+repository = "https://github.com/enku/gbp-archive"
+
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
