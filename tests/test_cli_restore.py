@@ -2,6 +2,7 @@
 
 # pylint: disable=missing-docstring
 
+import argparse
 import io
 from pathlib import Path
 from typing import Iterable
@@ -9,12 +10,13 @@ from unittest import TestCase, mock
 
 import gbp_testkit.fixtures as testkit
 from gbp_testkit.helpers import parse_args, print_command
+from gbpcli.types import Console
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
 from unittest_fixtures import Fixtures, given
 
 import gbp_archive as archive
-from gbp_archive.cli.restore import handler as restore
+from gbp_archive.cli.restore import handler
 
 from . import lib
 
@@ -32,13 +34,11 @@ class RestoreTests(TestCase):
         delete_builds(builds)
 
         cmdline = f"gbp restore -vf {path}"
-
         args = parse_args(cmdline)
-        gbp = mock.Mock()
         console = fixtures.console
         print_command(cmdline, console)
 
-        status = restore(args, gbp, console)
+        status = restore(args, console)
 
         self.assertEqual(0, status)
 
@@ -57,14 +57,12 @@ class RestoreTests(TestCase):
         restore_image.seek(0)
 
         cmdline = "gbp restore"
-
         args = parse_args(cmdline)
-        gbp = mock.Mock()
         console = fixtures.console
 
         with mock.patch("gbp_archive.cli.restore.sys.stdin") as stdin:
             stdin.buffer = restore_image
-            status = restore(args, gbp, console)
+            status = restore(args, console)
 
         self.assertEqual(0, status)
 
@@ -81,14 +79,12 @@ class RestoreTests(TestCase):
         restore_image.seek(0)
 
         cmdline = "gbp restore -v"
-
         args = parse_args(cmdline)
-        gbp = mock.Mock()
         console = fixtures.console
 
         with mock.patch("gbp_archive.cli.restore.sys.stdin") as stdin:
             stdin.buffer = restore_image
-            status = restore(args, gbp, console)
+            status = restore(args, console)
 
         self.assertEqual(0, status)
         expected = (
@@ -108,13 +104,11 @@ class RestoreTests(TestCase):
         delete_builds(builds)
 
         cmdline = f"gbp restore -tf {path}"
-
         args = parse_args(cmdline)
-        gbp = mock.Mock()
         console = fixtures.console
         print_command(cmdline, console)
 
-        status = restore(args, gbp, console)
+        status = restore(args, console)
 
         self.assertEqual(0, status)
         self.assertEqual(0, publisher.repo.build_records.count())
@@ -135,6 +129,11 @@ class RestoreTests(TestCase):
         with mock.patch("argparse._sys.stdout.write", console.out.print):
             with self.assertRaises(SystemExit):
                 parse_args(cmdline)
+
+
+def restore(args: argparse.Namespace, console: Console) -> int:
+    """Call the restore handler with a mock gbp instance"""
+    return handler(args, mock.Mock(), console)
 
 
 def dump_builds(builds: Iterable[Build], path: Path) -> None:
