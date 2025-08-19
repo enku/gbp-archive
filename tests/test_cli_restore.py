@@ -13,7 +13,7 @@ from gbp_testkit.helpers import parse_args, print_command
 from gbpcli.types import Console
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
-from unittest_fixtures import Fixtures, given
+from unittest_fixtures import Fixtures, given, where
 
 import gbp_archive as archive
 from gbp_archive.cli.restore import handler
@@ -22,6 +22,10 @@ from . import lib
 
 
 @given(lib.builds, testkit.console, testkit.publisher, lib.cd)
+@given(stdin=testkit.patch)
+@where(stdin__target="gbp_archive.cli.restore.sys.stdin")
+@given(argparse_stdout=testkit.patch)
+@where(argparse_stdout__target="argparse._sys.stdout")
 class RestoreTests(TestCase):
     def test_restore_all(self, fixtures: Fixtures) -> None:
         builds = fixtures.builds
@@ -51,7 +55,7 @@ class RestoreTests(TestCase):
 
     def test_restore_from_stdin(self, fixtures: Fixtures) -> None:
         builds = fixtures.builds
-        restore_image = io.BytesIO()
+        restore_image = fixtures.stdin.buffer = io.BytesIO()
         archive.dump(builds, restore_image)
         delete_builds(builds)
         restore_image.seek(0)
@@ -60,9 +64,7 @@ class RestoreTests(TestCase):
         args = parse_args(cmdline)
         console = fixtures.console
 
-        with mock.patch("gbp_archive.cli.restore.sys.stdin") as stdin:
-            stdin.buffer = restore_image
-            status = restore(args, console)
+        status = restore(args, console)
 
         self.assertEqual(0, status)
 
@@ -73,7 +75,7 @@ class RestoreTests(TestCase):
     def test_verbose_flag(self, fixtures: Fixtures) -> None:
         builds = fixtures.builds
         builds.sort(key=lambda build: (build.machine, int(build.build_id)))
-        restore_image = io.BytesIO()
+        restore_image = fixtures.stdin.buffer = io.BytesIO()
         archive.dump(builds, restore_image)
         delete_builds(builds)
         restore_image.seek(0)
@@ -82,9 +84,7 @@ class RestoreTests(TestCase):
         args = parse_args(cmdline)
         console = fixtures.console
 
-        with mock.patch("gbp_archive.cli.restore.sys.stdin") as stdin:
-            stdin.buffer = restore_image
-            status = restore(args, console)
+        status = restore(args, console)
 
         self.assertEqual(0, status)
         expected = (
@@ -124,11 +124,11 @@ class RestoreTests(TestCase):
         # pylint: disable=duplicate-code
         cmdline = "gbp restore --help"
         console = fixtures.console
+        fixtures.argparse_stdout.write = console.out.print
 
         console.out.print(f"[green]$ [/green]{cmdline}")
-        with mock.patch("argparse._sys.stdout.write", console.out.print):
-            with self.assertRaises(SystemExit):
-                parse_args(cmdline)
+        with self.assertRaises(SystemExit):
+            parse_args(cmdline)
 
 
 def restore(args: argparse.Namespace, console: Console) -> int:

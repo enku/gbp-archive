@@ -15,7 +15,7 @@ from gbp_testkit.helpers import parse_args, print_command
 from gbpcli.types import Console
 from gbpcli.utils import EPOCH
 from gentoo_build_publisher import publisher
-from unittest_fixtures import Fixtures, given
+from unittest_fixtures import Fixtures, given, where
 
 from gbp_archive.cli.dump import handler
 
@@ -23,6 +23,10 @@ from . import lib
 
 
 @given(testkit.publisher, lib.builds, testkit.console, testkit.tmpdir, lib.cd)
+@given(stdout=testkit.patch)
+@where(stdout__target="gbp_archive.cli.dump.sys.stdout")
+@given(argparse_stdout=testkit.patch)
+@where(argparse_stdout__target="argparse._sys.stdout")
 class DumpTests(TestCase):
     def test_dump_all(self, fixtures: Fixtures) -> None:
         path = Path("test.tar")
@@ -100,30 +104,28 @@ class DumpTests(TestCase):
     def test_dump_to_stdout(self, fixtures: Fixtures) -> None:
         cmdline = "gbp dump"
         args = parse_args(cmdline)
+        fixtures.stdout.buffer = io.BytesIO()
 
-        with mock.patch("gbp_archive.cli.dump.sys.stdout") as stdout:
-            stdout.buffer = io.BytesIO()
-            status = dump(args, fixtures.console)
+        status = dump(args, fixtures.console)
 
         self.assertEqual(0, status)
         path = Path("test.tar")
 
         with path.open("wb") as fp:
-            fp.write(stdout.buffer.getvalue())
+            fp.write(fixtures.stdout.buffer.getvalue())
 
         self.assertEqual(6, len(records(path)))
 
     def test_verbose_flag(self, fixtures: Fixtures) -> None:
         builds = fixtures.builds
         builds.sort(key=lambda build: (build.machine, build.build_id))
+        fixtures.stdout.buffer = io.BytesIO()
 
         cmdline = "gbp dump -v"
         args = parse_args(cmdline)
         console = fixtures.console
 
-        with mock.patch("gbp_archive.cli.dump.sys.stdout") as stdout:
-            stdout.buffer = io.BytesIO()
-            status = dump(args, console)
+        status = dump(args, console)
 
         self.assertEqual(0, status)
         expected = (
@@ -198,11 +200,11 @@ class DumpTests(TestCase):
     def test_help_flag(self, fixtures: Fixtures) -> None:
         cmdline = "gbp dump --help"
         console = fixtures.console
+        fixtures.argparse_stdout.write = console.out.print
 
         console.out.print(f"[green]$ [/green]{cmdline}")
-        with mock.patch("argparse._sys.stdout.write", console.out.print):
-            with self.assertRaises(SystemExit):
-                parse_args(cmdline)
+        with self.assertRaises(SystemExit):
+            parse_args(cmdline)
 
 
 def dump(args: argparse.Namespace, console: Console) -> int:
