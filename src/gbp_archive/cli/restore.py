@@ -8,7 +8,7 @@ from gbpcli.gbp import GBP
 from gbpcli.types import Console
 from gentoo_build_publisher.types import Build
 
-import gbp_archive as archive
+import gbp_archive.core as archive
 from gbp_archive.types import DumpPhase, DumpType
 
 HELP = "Restore a gbp dump"

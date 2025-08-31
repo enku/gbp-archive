@@ -12,7 +12,7 @@ from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
 from unittest_fixtures import Fixtures, given, where
 
-import gbp_archive as archive
+import gbp_archive.core as archive
 
 from . import lib
 

@@ -12,7 +12,7 @@ from gentoo_build_publisher import publisher
 from gentoo_build_publisher.records import BuildRecord
 from gentoo_build_publisher.types import TAG_SYM, Build
 
-import gbp_archive as archive
+import gbp_archive.core as archive
 from gbp_archive.types import DumpPhase, DumpType
 
 HELP = """Dump builds to a file.
