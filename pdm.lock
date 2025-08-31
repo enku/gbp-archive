@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:d9d863c05cffadae30309296794bab64b114507484e49dfc0d98d2098fc9b561"
+content_hash = "sha256:1889c5f6e69795cbb9f31e5d2b140e4a21fa5afe77856aef0fe429ce1afbcd20"
 
 [[metadata.targets]]
 requires_python = ">=3.11"
@@ -712,11 +712,11 @@ files = [
 
 [[package]]
 name = "gentoo-build-publisher"
-version = "2.8.1.dev14"
+version = "3.0.0.dev1"
 requires_python = ">=3.11"
 git = "https://github.com/enku/gentoo-build-publisher.git"
 ref = "master"
-revision = "f88475378c76388e3a41828bd30f2816c0a162e2"
+revision = "32c32b55b6e4f3e2518b16d4e0c0a869f4f138d4"
 summary = "Gentoo Build Publisher"
 groups = ["default", "dev"]
 dependencies = [
@@ -735,16 +735,17 @@ dependencies = [
 
 [[package]]
 name = "gentoo-build-publisher"
-version = "2.8.1.dev14"
+version = "3.0.0.dev1"
 extras = ["test"]
 requires_python = ">=3.11"
 git = "https://github.com/enku/gentoo-build-publisher.git"
 ref = "master"
-revision = "f88475378c76388e3a41828bd30f2816c0a162e2"
+revision = "32c32b55b6e4f3e2518b16d4e0c0a869f4f138d4"
 summary = "Gentoo Build Publisher"
 groups = ["dev"]
 dependencies = [
     "factory-boy>=3.3.3",
+    "gentoo-build-publisher @ git+https://github.com/enku/gentoo-build-publisher.git@32c32b55b6e4f3e2518b16d4e0c0a869f4f138d4",
     "gentoo-build-publisher @ git+https://github.com/enku/gentoo-build-publisher.git@master",
     "unittest-fixtures>=2.3.0",
 ]
