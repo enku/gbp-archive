@@ -12,7 +12,7 @@ from unittest import TestCase
 import gbp_testkit.fixtures as testkit
 from gbpcli.utils import EPOCH
 from gentoo_build_publisher import publisher
-from unittest_fixtures import Fixtures, given, where
+from unittest_fixtures import Fixtures, Param, given, where
 
 from . import lib
 
@@ -21,6 +21,7 @@ from . import lib
 @given(stdout=testkit.patch)
 @where(stdout__target="gbp_archive.cli.dump.sys.stdout")
 @where(argparse_stdout__target="argparse._sys.stdout")
+@where(cd=Param(lambda fixtures: fixtures.tmpdir))
 class DumpTests(TestCase):
     def test_dump_all(self, fixtures: Fixtures) -> None:
         path = Path("test.tar")

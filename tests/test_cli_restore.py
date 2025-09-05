@@ -13,7 +13,7 @@ from gbp_testkit.helpers import parse_args, print_command
 from gbpcli.types import Console
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
-from unittest_fixtures import Fixtures, given, where
+from unittest_fixtures import Fixtures, Param, given, where
 
 import gbp_archive.core as archive
 from gbp_archive.cli.restore import handler
@@ -21,11 +21,12 @@ from gbp_archive.cli.restore import handler
 from . import lib
 
 
-@given(lib.builds, testkit.console, testkit.publisher, lib.cd)
+@given(lib.builds, testkit.console, testkit.publisher, testkit.tmpdir, lib.cd)
 @given(stdin=testkit.patch)
 @where(stdin__target="gbp_archive.cli.restore.sys.stdin")
 @given(argparse_stdout=testkit.patch)
 @where(argparse_stdout__target="argparse._sys.stdout")
+@where(cd=Param(lambda fixtures: fixtures.tmpdir))
 class RestoreTests(TestCase):
     def test_restore_all(self, fixtures: Fixtures) -> None:
         builds = fixtures.builds

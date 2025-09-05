@@ -38,11 +38,9 @@ def builds(
     return builds_
 
 
-@fixture(testkit.tmpdir)
-def cd(fixtures: Fixtures, *, cd: Path | None = None) -> FixtureContext[Path]:
-    """Changes to the given directory (tmpdir by default)"""
+def cd(fixtures: Fixtures, *, cd: Path = Path(".")) -> FixtureContext[Path]:
+    """Changes to the given directory"""
     cwd = cwd = os.getcwd()
-    cd = cd or fixtures.tmpdir
     os.chdir(cd)
     yield cd
     os.chdir(cwd)

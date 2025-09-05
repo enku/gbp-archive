@@ -10,7 +10,7 @@ from unittest import TestCase, mock
 import gbp_testkit.fixtures as testkit
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
-from unittest_fixtures import Fixtures, given, where
+from unittest_fixtures import Fixtures, Param, given, where
 
 import gbp_archive.core as archive
 
@@ -80,7 +80,8 @@ class CoreRestoreTests(TestCase):
             self.assertTrue(publisher.repo.build_records.exists(build))
 
 
-@given(lib.cd, testkit.tmpdir, testkit.publisher, build=lib.pulled_build)
+@given(testkit.tmpdir, lib.cd, testkit.publisher, build=lib.pulled_build)
+@where(cd=Param(lambda fixtures: fixtures.tmpdir))
 class StorageDumpTestCase(TestCase):
     """Tests for Storage.dump"""
 
