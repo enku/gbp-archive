@@ -12,7 +12,8 @@ from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
 from unittest_fixtures import Fixtures, Param, given, where
 
-import gbp_archive.core as archive
+from gbp_archive import storage
+from gbp_archive.core import dump, restore
 
 from . import lib
 
@@ -27,7 +28,7 @@ class CoreDumpTests(TestCase):
             publisher.pull(build)
 
         outfile = io.BytesIO()
-        archive.dump(builds, outfile)
+        dump(builds, outfile)
         outfile.seek(0)
 
         with tar.open(mode="r", fileobj=outfile) as tarfile:
@@ -41,10 +42,10 @@ class CoreDumpTests(TestCase):
             metadata_builds = {Build.from_id(i) for i in metadata["manifest"]}
             self.assertEqual(set(builds), metadata_builds)
 
-            storage = tarfile.extractfile("storage.tar")
-            assert storage is not None
-            with storage:
-                with tar.open(mode="r", fileobj=storage) as storage_tarfile:
+            fp = tarfile.extractfile("storage.tar")
+            assert fp is not None
+            with fp:
+                with tar.open(mode="r", fileobj=fp) as storage_tarfile:
                     names = storage_tarfile.getnames()
                     self.assertEqual(120, len(names))
 
@@ -65,7 +66,7 @@ class CoreRestoreTests(TestCase):
             publisher.pull(build)
 
         fp = io.BytesIO()
-        archive.dump(builds, fp)
+        dump(builds, fp)
         fp.seek(0)
 
         for build in builds:
@@ -73,7 +74,7 @@ class CoreRestoreTests(TestCase):
             self.assertFalse(publisher.storage.pulled(build))
             self.assertFalse(publisher.repo.build_records.exists(build))
 
-        archive.restore(fp)
+        restore(fp)
 
         for build in builds:
             self.assertTrue(publisher.storage.pulled(build))
@@ -99,7 +100,7 @@ class StorageDumpTestCase(TestCase):
             # Then we can dump the builds to the file
             start = out.tell()
             callback = mock.Mock()
-            archive.storage.dump([build], out, callback=callback)
+            storage.dump([build], out, callback=callback)
 
             self.assertGreater(out.tell(), start)
 
@@ -131,20 +132,20 @@ class StorageRestoreTests(TestCase):
 
         # Given the dump of it
         fp = io.BytesIO()
-        storage = publisher.storage
+        # storage = publisher.storage
         callback = mock.Mock()
-        archive.storage.dump([build], fp, callback=callback)
+        storage.dump([build], fp, callback=callback)
 
         # When we run restore on it
-        storage.delete(build)
-        self.assertFalse(storage.pulled(build))
+        publisher.delete(build)
+        self.assertFalse(publisher.pulled(build))
         fp.seek(0)
-        restored = archive.storage.restore(fp, callback=callback)
+        restored = storage.restore(fp, callback=callback)
 
         # Then we get the builds restored
         self.assertEqual([build], restored)
-        self.assertTrue(storage.pulled(build))
-        tags = storage.get_tags(build)
+        self.assertTrue(publisher.storage.pulled(build))
+        tags = publisher.storage.get_tags(build)
         self.assertEqual(["", "mytag"], tags)
 
         # And the callback is called with the expected arguments
