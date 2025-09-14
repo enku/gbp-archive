@@ -4,6 +4,7 @@ import tarfile as tar
 import tempfile
 from typing import IO, Iterable
 
+from gentoo_build_publisher import publisher, signals
 from gentoo_build_publisher.types import Build
 
 from gbp_archive import metadata, records, storage
@@ -44,6 +45,37 @@ def restore(
 ) -> None:
     """Restore builds from the given infile"""
     with tar.open(fileobj=infile, mode="r|") as tarfile:
-        for item in ARCHIVE_ITEMS:
-            fp = tarfile_extract(tarfile, tarfile_next(tarfile))
-            item.restore(fp, callback=callback)
+        fp = tarfile_extract(tarfile, tarfile_next(tarfile))
+        manifest = metadata.restore(fp, callback=callback)["manifest"]
+        builds = [Build.from_id(build_str) for build_str in manifest]
+
+        emit_prepull_signals(builds)
+
+        fp = tarfile_extract(tarfile, tarfile_next(tarfile))
+        records.restore(fp, callback=callback)
+
+        fp = tarfile_extract(tarfile, tarfile_next(tarfile))
+        storage.restore(fp, callback=callback)
+
+        emit_postpull_signals(builds)
+
+
+def emit_prepull_signals(builds: Iterable[Build]) -> None:
+    """Emit prepull signals for the given builds"""
+    dispatcher = signals.dispatcher
+
+    for build in builds:
+        dispatcher.emit("prepull", build=build)
+
+
+def emit_postpull_signals(builds: Iterable[Build]) -> None:
+    """Emit postpull signals for the given builds"""
+    dispatcher = signals.dispatcher
+
+    for build in builds:
+        dispatcher.emit(
+            "postpull",
+            build=publisher.record(build),
+            packages=publisher.storage.get_packages(build),
+            gbp_metadata=publisher.storage.get_metadata(build),
+        )

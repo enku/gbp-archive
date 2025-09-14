@@ -5,10 +5,11 @@
 import io
 import json
 import tarfile as tar
+from typing import Any
 from unittest import TestCase, mock
 
 import gbp_testkit.fixtures as testkit
-from gentoo_build_publisher import publisher
+from gentoo_build_publisher import publisher, signals
 from gentoo_build_publisher.types import Build
 from unittest_fixtures import Fixtures, Param, given, where
 
@@ -79,6 +80,56 @@ class CoreRestoreTests(TestCase):
         for build in builds:
             self.assertTrue(publisher.storage.pulled(build))
             self.assertTrue(publisher.repo.build_records.exists(build))
+
+    def test_emits_pulled_signals(self, fixtures: Fixtures) -> None:
+        # given the dumped builds
+        builds = fixtures.builds
+        fp = io.BytesIO()
+
+        for build in builds:
+            publisher.pull(build)
+
+        dump(builds, fp)
+        fp.seek(0)
+
+        for build in builds:
+            publisher.delete(build)
+
+        # given the pre_pull and post_pull signal handlers
+        pre_pull_args: list[dict[str, Any]] = []
+        post_pull_args: list[dict[str, Any]] = []
+
+        def pre_pull(**kwargs: Any) -> None:
+            pre_pull_args.append(kwargs)
+
+        def post_pull(**kwargs: Any) -> None:
+            post_pull_args.append(kwargs)
+
+        dispatcher = signals.dispatcher
+        dispatcher.bind(prepull=pre_pull)
+        dispatcher.bind(postpull=post_pull)
+
+        # when we restore the builds
+        restore(fp)
+
+        # then signal handlers are called for each build
+        builds = sorted(builds, key=lambda build: (build.machine, int(build.build_id)))
+        build_count = len(builds)
+
+        self.assertEqual(len(pre_pull_args), build_count)
+        self.assertEqual(len(post_pull_args), build_count)
+
+        for build, pre_args, post_args in zip(builds, pre_pull_args, post_pull_args):
+            self.assertEqual(pre_args, {"build": build})
+
+            self.assertEqual(
+                post_args,
+                {
+                    "build": publisher.record(build),
+                    "packages": publisher.storage.get_packages(build),
+                    "gbp_metadata": publisher.storage.get_metadata(build),
+                },
+            )
 
 
 @given(testkit.tmpdir, lib.cd, testkit.publisher, build=lib.pulled_build)
