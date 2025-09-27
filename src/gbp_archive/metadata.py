@@ -2,27 +2,14 @@
 
 import datetime as dt
 import json
-from typing import IO, Any, Iterable, TypedDict, cast
+from typing import IO, Any, Iterable, cast
 
 from gentoo_build_publisher.types import Build
 from gentoo_build_publisher.utils import get_hostname, time
 
+from gbp_archive.types import Metadata
+
 ARCHIVE_NAME = "gbp-archive"
-
-
-class Metadata(TypedDict):
-    """Metadata provided in a dump archive"""
-
-    version: int
-
-    created: str
-    """Timestamp of the dump in ISO-6601 format."""
-
-    hostname: str
-    """Hostname that created the dump"""
-
-    manifest: list[str]
-    """List of stringified Builds"""
 
 
 def dump(
