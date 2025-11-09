@@ -47,7 +47,7 @@ def restore(fp: IO[bytes], *, callback: DumpCallback) -> list[Build]:
 
 
 def is_content_dir(member: tar.TarInfo, content_type: Content) -> bool:
-    """Return true if the given TarFile member is a repo directory"""
+    """Return true if the given TarFile member is the given Content directory"""
     if not member.isdir():
         return False
 
