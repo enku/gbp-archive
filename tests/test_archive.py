@@ -48,7 +48,7 @@ class CoreDumpTests(TestCase):
             with fp:
                 with tar.open(mode="r", fileobj=fp) as storage_tarfile:
                     names = storage_tarfile.getnames()
-                    self.assertEqual(120, len(names))
+                    self.assertEqual(126, len(names))
 
             records = tarfile.extractfile("records.json")
             assert records is not None
