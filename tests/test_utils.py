@@ -29,7 +29,7 @@ class DataclassConversionTests(TestCase):
             return Decimal(value)
 
         @utils.convert_to(MyDataclass, "due")
-        def _(value: str) -> dt.date:
+        def _(value: str) -> dt.date:  # pylint: disable=function-redefined
             return dt.date.fromisoformat(value)
 
         data = {"name": "marduk", "balance": "5.00", "due": "2025-02-16"}
