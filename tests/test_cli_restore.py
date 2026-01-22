@@ -20,6 +20,8 @@ from gbp_archive.cli.restore import handler
 
 from . import lib
 
+PATH = Path("test.tar")
+
 
 @given(lib.builds, testkit.console, testkit.publisher, testkit.tmpdir, lib.cd)
 @given(stdin=testkit.patch)
@@ -34,11 +36,10 @@ class RestoreTests(TestCase):
         publisher.publish(first_build)
         last_build = builds[-1]
         publisher.tag(last_build, "last")
-        path = Path("test.tar")
-        dump_builds(builds, path)
+        dump_builds(builds, PATH)
         delete_builds(builds)
 
-        cmdline = f"gbp restore -vf {path}"
+        cmdline = f"gbp restore -vf {PATH}"
         args = parse_args(cmdline)
         console = fixtures.console
         print_command(cmdline, console)
@@ -100,11 +101,10 @@ class RestoreTests(TestCase):
 
     def test_list_flag(self, fixtures: Fixtures) -> None:
         builds = fixtures.builds
-        path = Path("test.tar")
-        dump_builds(builds, path)
+        dump_builds(builds, PATH)
         delete_builds(builds)
 
-        cmdline = f"gbp restore -tf {path}"
+        cmdline = f"gbp restore -tf {PATH}"
         args = parse_args(cmdline)
         console = fixtures.console
         print_command(cmdline, console)
